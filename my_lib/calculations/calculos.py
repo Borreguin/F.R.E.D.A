@@ -8,6 +8,7 @@ import os
 import datetime as dt
 import pandas as pd
 import numpy as np
+from my_lib.mongo_db_manager import mongo_handler as mh
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 # ______________________________________________________________________________________________________________#
@@ -29,7 +30,11 @@ yyyy_MM_dd = "yyyy-MM-dd"
 
 
 
-
+def test():
+    cl = mh.configMonClient()
+    db = cl.get_database("settings")
+    col = db["mapping"]
+    col.insert_one(dict(test="prueba", fecha=dt.datetime.now()))
 
 
 if __name__ == "__main__":
