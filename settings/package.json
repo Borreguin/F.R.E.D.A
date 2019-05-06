@@ -1,0 +1,23 @@
+{
+  "name": "settings",
+  "version": "0.0.1",
+
+  "ROTATING_FILE_HANDLER_HELP": "https://docs.python.org/3.6/library/logging.handlers.html#logging.handlers.RotatingFileHandler.__init__",
+  "ROTATING_FILE_HANDLER": {"filename":"freda.log", "maxBytes":10000, "backupCount":5, "mode":"a"},
+  "ROTATING_FILE_HANDLER_LOG_LEVEL": {"value": "error", "options":["error", "warning", "info", "debug", "off"]},
+
+  "MONGOCLIENT_SETTINGS": {"host":"localhost", "port": 2717, "tz_aware": true},
+  "MONGO_LOG_LEVEL_OPTIONS": ["ON", "OFF"],
+  "MONGO_LOG_LEVEL": "ON",
+  "MONGOPATH_WINDOWS": "D:\\freda_db\\db",
+  "MONGOEXE_WINDOWS":  "C:\\Program Files\\MongoDB\\Server\\3.6\\bin\\mongod.exe",
+  "MONGOPATH_POSIX":   "~/freda_db/db",
+  "MONGOEXE_POSIX":    "./bin/mongo",
+
+  "DB_NAME" : "DB_FREDA",
+  "DB_TIME_SERIES": "DB_TIME_SERIES",
+  "CL_TAG_LIST": "CATL_TAGS",
+  "CL_LAST_VALUES": "SUMM_LAST_VALUES",
+
+  "SUPPORTED_FORMAT_DATES": ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f"]
+}

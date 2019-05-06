@@ -14,10 +14,7 @@
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 """
-"""
-    Este proyecto ha sido desarrollado en la Gerencia de Operaciones de CENACE
-    Mateo633
-"""
+
 
 import numpy as np
 import pandas as pd

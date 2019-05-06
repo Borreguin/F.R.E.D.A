@@ -13,16 +13,34 @@
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 """
-
 from flask import Flask
+from flask import Blueprint
+from flask_restful import Api
+from resources import api_services as api_sr
 
 app = Flask(__name__)
+api_bp = Blueprint('api', __name__)
+api = Api(api_bp)
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+def add_api_resources():
+    """
+    The following resources can be accessed as: http://hostname:port/api/resources/parameters
+    :return:
+    """
+    # Specify the api prefix to use
+    app.register_blueprint(api_bp, url_prefix='/api')
+    # Test Class, only for testing purposes:
+    api.add_resource(api_sr.SimpleClass, '/test', '/test/<string:test_id>')
+
+    """ Tag Point Snap shoot """
+    api.add_resource(api_sr.SnapShoot, '/snapshoot/<string:tag_name>')
+
+
+""" Adding the api resources"""
+add_api_resources()
 
 
 if __name__ == '__main__':
-    app.run()
+    # TODO: remove debug=True for production environment
+    app.run(debug=True)
