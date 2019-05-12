@@ -5,16 +5,16 @@ import sys
 
 """"
     Created by Roberto Sánchez A, based on the Master Thesis:
-    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.a@gmail.com; you can redistribute it
+    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com; you can redistribute it
     and/or modify it under the terms of the MIT License.
 
     The F.R.E.D.A project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     MIT license terms for more details.
 
-    If you need more information. Please contact the email above: rg.sanchez.a@gmail.com
+    If you need more information. Please contact the email above: rg.sanchez.arg_from@gmail.com
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 """
@@ -29,9 +29,9 @@ import json
 """ script path"""
 script_path = os.path.dirname(os.path.abspath(__file__))
 
-""" read package.json configurations """
+""" read config.json configurations """
 
-with open(os.path.join(script_path, "package.json")) as json_file:
+with open(os.path.join(script_path, "config.json")) as json_file:
     cfg_json = json.load(json_file)
 
 """ Log file settings: """
@@ -68,6 +68,20 @@ CL_LAST_VALUES = cfg_json["CL_LAST_VALUES"]
 
 """ SUPPORTED DATES """
 SUPPORTED_FORMAT_DATES = cfg_json["SUPPORTED_FORMAT_DATES"]
+DEFAULT_DATE_FORMAT = cfg_json["DEFAULT_DATE_FORMAT"]
+
+
+"""" FLASK CONFIGURATION """
+FLASK_SERVER_NAME = cfg_json["FLASK_SERVER_NAME"]
+FLASK_DEBUG = cfg_json["FLASK_DEBUG"]
+
+RESTPLUS_SWAGGER_UI_DOC_EXPANSION = cfg_json["RESTPLUS_SWAGGER_UI_DOC_EXPANSION"]
+RESTPLUS_VALIDATE = cfg_json["RESTPLUS_VALIDATE"]
+RESTPLUS_MASK_SWAGGER = cfg_json["RESTPLUS_MASK_SWAGGER"]
+RESTPLUS_ERROR_404_HELP = cfg_json["RESTPLUS_ERROR_404_HELP"]
+
+SQLALCHEMY_DATABASE_URI = cfg_json["SQLALCHEMY_DATABASE_URI"]
+SQLALCHEMY_TRACK_MODIFICATIONS = cfg_json["SQLALCHEMY_TRACK_MODIFICATIONS"]
 
 class MongoClientDefaultConfig():
     """
@@ -138,7 +152,7 @@ class MongoClientDefaultConfig():
             self.client.server_info()
         except Exception as e:
             self.lg.logger.warning(e)
-            self.lg.logger.info("The MongoDb is not running. Starting a new instance")
+            self.lg.logger.info("The MongoDb is not running. Starting arg_from new instance")
             if self.setup_mongo_db():
                 if os.name == "nt":
                     self.is_db_running_win_os()

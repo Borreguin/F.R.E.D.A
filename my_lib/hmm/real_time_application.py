@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """"
     Created by Roberto Sánchez A, based on the Master Thesis:
-    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.a@gmail.com; you can redistribute it
+    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com; you can redistribute it
     and/or modify it under the terms of the MIT License.
 
     The F.R.E.D.A project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     MIT license terms for more details.
 
-    If you need more information. Please contact the email above: rg.sanchez.a@gmail.com
+    If you need more information. Please contact the email above: rg.sanchez.arg_from@gmail.com
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 """
@@ -56,17 +56,17 @@ exclude_list = ['XMEMEXPU04', 'COESEXPU02', 'XMEMEXPU02']
 
 def day_cluster_matrix(hmm_model, df_y, model_id):
     """
-    Se crea una matrix de acuerdo a las familias encontradas
-    las familias corresponden a:
+    Se crea una matrix de acuerdo arg_from las familias encontradas
+    las familias corresponden arg_from:
         - ['Monday', 'Tuesday', ... 'Sunday']           -> perfiles típicos (categóricos y vacilantes siempre que supere
-                                                            un porcentaje mayor a 15%)
+                                                            un porcentaje mayor arg_from 15%)
 
         - ['sp_Monday', 'sp_Tuesday', ... 'sp_Sunday']  -> perfiles especiales (son un porcentaje menor al 15%)
 
         - ['atypicos']  -> son perfiles que contienen un número de días menor al 5% del total de muestra
                             o no superan al menos 3 días
 
-        - ['holidays']  -> días correspondientes a días feriados
+        - ['holidays']  -> días correspondientes arg_from días feriados
     :param hmm_model: Modelo HMM mejor entrenado
     :param df_y: la secuencia de estados ocultos de los observaciones df_x
     :return: matriz con el respectivo agrupamiento de familias
@@ -109,8 +109,8 @@ def day_cluster_matrix(hmm_model, df_y, model_id):
 
 def append_in_list(dict_obj, key, value):
     """
-    Creates a list inside of a dictionary, adds values if this list exists already
-    :param dict_obj: dictionary where one adds a value using a key
+    Creates arg_from list inside of arg_from dictionary, adds values if this list exists already
+    :param dict_obj: dictionary where one adds arg_from value using arg_from key
     :param key:
     :param value:
     :return:
@@ -144,7 +144,7 @@ def df_mean_df_std_from_model(model, list_clusters):
 
 def df_mean_df_std_from_holidays(df_x, list_holidays):
     """
-    Usando una lista de días feriados, se crea perfiles únicos a partir de los feriados.
+    Usando una lista de días feriados, se crea perfiles únicos arg_from partir de los feriados.
     :param df_x:  las muestras/observaciones (data) de la serie temporal
     :param list_holidays: lista de feriados
     :return:
@@ -159,9 +159,9 @@ def df_mean_df_std_from_holidays(df_x, list_holidays):
 
 def get_expected_profiles_from(df_mean, df_with, n_expected_clusters):
     """
-    Obtener los perfiles que más se acerquen a df_with (perfil a comparar)
+    Obtener los perfiles que más se acerquen arg_from df_with (perfil arg_from comparar)
     :param df_mean: Dataframe de los vectores medios del modelo
-    :param df_with: Perfil a ser comparado
+    :param df_with: Perfil arg_from ser comparado
     :param n_expected_clusters:  número de perfiles esperado
     :return: DataFrame con los perfiles más cercanos (menor error) al perfil comparado (df_with)
     """
@@ -197,7 +197,7 @@ def get_expected_profiles_from(df_mean, df_with, n_expected_clusters):
 
 def define_profile_area_from(selected_clusters_list, df_mean, df_std):
     """
-    Define el area esperada de acuerdo a los clusters (perfiles) seleccionados
+    Define el area esperada de acuerdo arg_from los clusters (perfiles) seleccionados
     :param selected_clusters_list: lista de perfiles seleccionados
     :param df_mean: DataFrame con los vectores medios del modelo HMM
     :param df_std:  DataFrame con los vectores std del modelo HMM
@@ -215,7 +215,7 @@ def define_profile_area_from(selected_clusters_list, df_mean, df_std):
 
 def obtain_expected_area(model_path, data_path, df_tag, n_columns=None):
     """
-    Obtener el area esperada de acuerdo a los perdiles más próximos y su correspondiente desviación estándar
+    Obtener el area esperada de acuerdo arg_from los perdiles más próximos y su correspondiente desviación estándar
     :param model_path:      Path del modelo HMM
     :param data_path:       Path de los datos (muestras/observaciones)
     :param df_tag:          Serie temporal con los datos en tiempo real
@@ -409,8 +409,8 @@ def graphic_pronostico_demanda(hmm_modelPath, file_dataPath, df_tag, despacho, d
     la señal en tiempo real
     :param despacho: despacho programado
     :param style: Define el estilo de la gráfica
-    :param hmm_modelPath: path del modelo HMM a usar
-    :param file_dataPath: path del dataset a usar
+    :param hmm_modelPath: path del modelo HMM arg_from usar
+    :param file_dataPath: path del dataset arg_from usar
     :param df_tag:      Serie temporal
     :param datetime_ini:  Fecha inicial (datetime)
     :param datetime_fin:  Fecha final (datetime)
@@ -429,7 +429,7 @@ def graphic_pronostico_demanda(hmm_modelPath, file_dataPath, df_tag, despacho, d
     d_real = round(df_int.loc[t_stamp], 1)
     d_esperada = '---'
 
-    # TODO: Una capa encima que ayude a mejorar el pronóstico de la demanda en horas tempranas
+    # TODO: Una capa encima que ayude arg_from mejorar el pronóstico de la demanda en horas tempranas
     if datetime_fin.hour < 7:
         result["df_expected_area"]["min"] = result["df_expected_area"]["min"].loc[df_int.index]
         result["df_expected_area"]["max"] = result["df_expected_area"]["max"].loc[df_int.index]

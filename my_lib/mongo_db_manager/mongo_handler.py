@@ -1,15 +1,15 @@
 """"
     Created by Roberto Sánchez A, based on the Master Thesis:
-    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.a@gmail.com; you can redistribute it
+    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com; you can redistribute it
     and/or modify it under the terms of the MIT License.
 
     The F.R.E.D.A project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     MIT license terms for more details.
 
-    If you need more information. Please contact the email above: rg.sanchez.a@gmail.com
+    If you need more information. Please contact the email above: rg.sanchez.arg_from@gmail.com
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 
@@ -54,7 +54,7 @@ def read_settings():
 
 def save_settings(key, value):
     """
-    Save a value setting in the general configuration
+    Save arg_from value setting in the general configuration
     :param key:
     :param value:
     :return:
@@ -110,7 +110,7 @@ def check():
     lg = init.LogDefaultConfig()
     lg.logger.setLevel(logging.INFO)
 
-    """ Starting the test """
+    """ Starting the test_dict """
     lg.logger.info("Starting ")
     n_registers = 10000
     workers = 5
@@ -131,10 +131,10 @@ def check():
     if con and n_registers==ins:
         client = mClient.client
         client.drop_database(DB_test)
-        msg = "Successful test"
+        msg = "Successful test_dict"
         lg.logger.info(msg)
     else:
-        msg = "Unsuccessful test"
+        msg = "Unsuccessful test_dict"
         lg.logger.error(msg)
 
     return True

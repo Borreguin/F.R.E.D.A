@@ -7,6 +7,7 @@ import settings.initial_settings as init
 
 import pandas as pd
 import pymongo as pm
+import re
 import datetime as dt
 import sys, traceback
 import more_itertools as it
@@ -48,7 +49,7 @@ class RTContainer(RTDAcquisitionSource):
 
     @staticmethod
     def time_range_for_today():
-        return pd.date_range(dt.datetime.now().date(), dt.datetime.now(tz=dt.timezone.utc))
+        return pd.date_range(dt.datetime.now().date(), dt.datetime.now(tz=dt.timezone.utc), periods=2)
 
     @staticmethod
     def start_and_time_of(time_range):
@@ -64,18 +65,22 @@ class RTContainer(RTDAcquisitionSource):
     def snapshot_of_tag_list(self, tag_list, time):
         pass
 
-    def find_idTagSeries_for(self, TagName: str):
+    def find_tag_point_by_name(self, TagName: str):
+        TagName = TagName.upper().strip()
         try:
             db = self.container[DBTimeSeries]
             collection = db[CollectionTagList]
             result = collection.find_one({"tag_name": TagName})
-            return True, result
+            if result is None:
+                return False, result
+            else:
+                return True, result
         except Exception as e:
             tb = traceback.format_exc()
             self.log.error(str(e) + str(tb))
             return False, str(e)
 
-    def find_tagName(self, tag_id:str):
+    def find_tag_point_by_id(self, tag_id:str):
         try:
             db = self.container[DBTimeSeries]
             collection = db[CollectionTagList]
@@ -86,9 +91,55 @@ class RTContainer(RTDAcquisitionSource):
             self.log.error(str(e) + str(tb))
             return False, str(e)
 
+    def update_tag_name(self, tag_name:str, new_tag_name:str):
+
+        tag_name = tag_name.upper().strip()
+        new_tag_name = new_tag_name.strip().upper()
+        success_old, result_old = self.find_tag_point_by_name(tag_name)
+        if not success_old:
+            return success_old, "[{0}] does not exist in the historian".format(tag_name)
+
+        success_new, result_new = self.find_tag_point_by_name(new_tag_name)
+        if success_new:
+            return False, "[{0}] already exists in the historian. Use other new_tag_name"\
+                .format(new_tag_name)
+
+        if success_old and not success_new:
+            try:
+                filter_dict = dict(tag_id=result_old["tag_id"])
+                db = self.container[DBTimeSeries]
+                collection = db[CollectionTagList]
+                collection.update_one(filter_dict,
+                                               {"$set": {"tag_name": new_tag_name}
+                })
+                return True, "[{0}] changed to [{1}]".format(tag_name, new_tag_name)
+            except Exception as e:
+                return False, str(e)
+
+    def find_all_tags(self, filter_exp:str=None):
+        try:
+            db = self.container[DBTimeSeries]
+            collection = db[CollectionTagList]
+
+            if filter_exp is not None:
+                filter_exp = filter_exp.replace("*", ".*")
+                rgx = re.compile(filter_exp, re.IGNORECASE)  # compile the regex
+                result = collection.find({"tag_name" : rgx}, projection={'_id': False})
+            else:
+                result = collection.find(projection={'_id': False})
+
+            to_send = list()
+            for d in result:
+                to_send.append(d)
+            df = pd.DataFrame(to_send).sort_values(by=["tag_name"])
+
+            return True, df.to_dict(orient="records")
+        except Exception as e:
+            return False, list()
 
     def create_tag_point(self, tag_name: str, tag_type: str="generic"):
-        tag_type = "TSCL_" + tag_type
+        tag_type = "TSCL_" + tag_type.upper().strip()
+        tag_name = tag_name.upper().strip()
 
         db = self.container[DBTimeSeries]
         cl_tag_list = db[CollectionTagList]
@@ -104,38 +155,51 @@ class RTContainer(RTDAcquisitionSource):
 
         try:
             result = cl_tag_list.insert_one(tagPoint)
-            msg = "[{0}] Tag created successfully".format(tag_name)
+            msg = "[{0}] was created successfully".format(tag_name)
             self.log.info(msg)
             inserted_id = str(tagPoint["_id"])
             cl_tag_list.update_one(tagPoint, {"$set": {"tag_id": inserted_id }}, upsert=True)
-            return result, msg
+            return True, msg
         except Exception as e:
-            msg = "[{0}] Duplicated Tag".format(tag_name)
+            msg = "[{0}] This tag already exists, duplicated-tag warning".format(tag_name)
             self.log.warning(msg + "\n" + str(e))
-            return None, msg
+            return False, msg
 
-    def delete_tag_point(self, tag_name: str):
+    def delete_tag_point(self, tag_name: str, tag_type: str):
         tag_point = TagPoint(self, tag_name, self.log)
-        if tag_point.tag_id is None:
-            msg = "There is not tag named " + tag_name
+        tag_type = tag_type.strip().upper()
+
+        msg = ""
+        if tag_point.tag_name is None:
+            msg = "[{0}] does not exists in the historian ".format(tag_name)
+        elif tag_type not in tag_point.tag_type:
+                msg += "[{0}] tagType does not match with [{1}]".format(tag_type, TagPoint.tag_type)
+
+        if len(msg)>0:
             self.log.warning(msg)
             return False, msg
-        collections_to_delete = [CollectionTagList, CollectionLastValues, tag_point.tag_type]
-        try:
-            db = self.container[DBTimeSeries]
-            filter_dict = dict(tag_id=tag_point.tag_id)
-            for collection in collections_to_delete:
+
+        collections_where_delete = [CollectionTagList, CollectionLastValues, tag_point.tag_type]
+        msg = ""
+        for collection in collections_where_delete:
+            try:
+                db = self.container[DBTimeSeries]
+                filter_dict = dict(tag_id=tag_point.tag_id)
                 cl = db[collection]
                 cl.delete_many(filter_dict)
+            except Exception as e:
+                msg += "Unable to delete tag_point {0} in collection {1}".\
+                    format(tag_name, collection)
+                self.log.error(msg + "\n" + str(e))
+
+        if len(msg) == 0:
             return True, "Tag point {0} was deleted".format(tag_name)
-        except Exception as e:
-            msg = "Unable to delete tag_point {0}".format(tag_name)
-            self.log.error(msg + "\n" + str(e))
+        else:
             return False, msg
+
 
     def close(self):
         self.container.close()
-
 
 
 class TagPoint(RTDATagPoint):
@@ -147,7 +211,7 @@ class TagPoint(RTDATagPoint):
 
     def __init__(self, container: RTContainer, tag_name: str, logger: logging.Logger=None):
         """
-        Creates a TagPoint that allows to manage the corresponding time series.
+        Creates arg_from TagPoint that allows to manage the corresponding time series.
 
         :param container: defines the container of the data
         :param tag_name: name of the tag
@@ -155,12 +219,12 @@ class TagPoint(RTDATagPoint):
 
         """
         self.container = container
-        self.tag_name = tag_name
+        self.tag_name = tag_name.upper()
         if logger is None:
             logger = init.LogDefaultConfig().logger
         self.log = logger
 
-        success, search = container.find_idTagSeries_for(tag_name)
+        success, search = container.find_tag_point_by_name(tag_name)
         if success and isinstance(search, dict):
             self._id = str(search["_id"])
             self.tag_id = str(search["tag_id"])
@@ -171,13 +235,11 @@ class TagPoint(RTDATagPoint):
             self.log.warning("[{0}]: Tag was not found".format(tag_name))
             print("There is not Tag called: " + self.tag_name)
 
-    def interpolated(self, time_range, span=None, as_df=True, numeric=True, **kwargs):
-        df_series = self.recorded_values(time_range, border_type="Inclusive", as_df=as_df, numeric=numeric)
+    def interpolated(self, time_range, numeric=True, **kwargs):
+        df_series = self.recorded_values(time_range, border_type="Inclusive", numeric=numeric)
         if numeric:
             df_series = df_series[["value"]].astype(float)
-        if span is not None:
-            # TODO: Make this case
-            pass
+
         df_result = pd.DataFrame(index=time_range)
         df_result = pd.concat([df_result, df_series], axis=1)
         df_result["value"].interpolate(inplace=True, **kwargs)
@@ -189,10 +251,11 @@ class TagPoint(RTDATagPoint):
         df = self.interpolated(new_time_range, as_df=as_df, numeric=numeric)
         return df
 
-    def recorded_values(self, time_range, border_type="Inclusive", as_df=True, numeric=True):
+    def recorded_values(self, time_range, border_type="Inclusive", numeric=True):
         db = self.container.container[DBTimeSeries]
         collection = db[self.tag_type]
         d_ini, d_end = h.to_date(time_range[0]), h.to_date(time_range[-1])
+        t_ini, t_fin = h.to_epoch(time_range[0]), h.to_epoch(time_range[-1])
 
         """
             f1          l1  f2          l2
@@ -201,13 +264,13 @@ class TagPoint(RTDATagPoint):
               t_ini < last
               t_fin > first
         """
-        # TODO: add first and last (cases) for inclusive, exclusive and interpolate
         filter_dict = {"tag_id": self.tag_id,
                        "date": {
                            "$gte": d_ini,
                            "$lte": d_end
-                       }
-                       # "first": {""}
+                            },
+                       "first": {"$lte": t_fin},
+                       "last": {"$gte": t_ini}
                        }
         cursor = collection.find(filter_dict)
         series = list()
@@ -221,15 +284,28 @@ class TagPoint(RTDATagPoint):
         df_series.set_index(["timestamp"], inplace=True)
         df_series.index = pd.to_datetime(df_series.index, unit='s', utc=True)
         df_series.sort_index(inplace=True)
+        df_series.drop_duplicates(inplace=True)
         # inclusive:
+        mask = None
         if border_type == "Inclusive":
-            """ Necessary to add microseconds to include 
-                Pandas uses nanoseconds but python datetime not.
-            """
+            """ Necessary to add microseconds to include Pandas uses nanoseconds but python datetime not."""
             mask = (df_series.index >= h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1)) & \
                    (df_series.index <= (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
-            df_series=df_series[mask]
 
+        if border_type == "Exclusive":
+            mask = (df_series.index > (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
+                   (df_series.index < (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
+
+        if border_type == "Right":
+            mask = (df_series.index > (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
+                   (df_series.index <= (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
+
+        if border_type == "Left":
+            mask = (df_series.index >= (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
+                   (df_series.index < (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
+
+        if mask is not None:
+            df_series = df_series[mask]
         return df_series
 
     def summaries(self, time_range, span, summary_type_list, calculation_type, timestamp_calculation):
@@ -241,13 +317,23 @@ class TagPoint(RTDATagPoint):
     def snapshot(self):
         pass
 
-    def current_value(self):
+    def current_value(self, fmt:str=None):
         db = self.container.container[DBTimeSeries]
         collection = db[CollectionLastValues]
         try:
             filter_dict = dict(tag_id=self.tag_id)
-            result = collection.find_one(filter_dict, )
-            return True, result
+            result = collection.find_one(filter_dict, {'_id': False})
+            reg = result["series"]
+
+            if fmt is None:
+                fmt = init.DEFAULT_DATE_FORMAT
+            if fmt == "epoch":
+                return True, reg
+
+            reg["timestamp"] = h.to_datetime(reg["timestamp"])
+            reg["timestamp"] = reg["timestamp"].strftime(fmt)
+
+            return True, reg
         except Exception as e:
             tb = traceback.format_exc()
             self.log.error(tb + "\n" + str(e))
@@ -259,8 +345,8 @@ class TagPoint(RTDATagPoint):
 
     def insert_register(self, register: dict, update_last=True, mongo_client: pm.MongoClient=None):
         """
-        Insert a new register in the RTDB. Note: update a register must not be done with this function
-        "insert_register" insert a register without checking the timestamp value (for fast writing).
+        Insert arg_from new register in the RTDB. Note: update arg_from register must not be done with this function
+        "insert_register" insert arg_from register without checking the timestamp value (for fast writing).
         register dictionaries are saved in the key-value record.
 
         "series":[ {"value": 1234.567, "timestamp": 1552852232.05, "quality": "Normal"},
@@ -282,6 +368,9 @@ class TagPoint(RTDATagPoint):
                   "Ex: dict(value=1234.567, timestamp=1552852232.053721)"
             self.log.error(msg)
             return False, msg
+
+        if self.tag_type is None:
+            return False, "[{0}] does not exist in the historian".format(self.tag_name)
 
         if mongo_client is None:
             cl = pm.MongoClient(**self.container.settings)
@@ -310,22 +399,23 @@ class TagPoint(RTDATagPoint):
                                            }, upsert=True)
             if update_last:
                 self.update_last_register(register)
-            self.log.debug("[{0}] One register was successfully inserted ".format(self.tag_name))
+            msg = "[{0}] One register was successfully inserted ".format(self.tag_name)
+            self.log.debug(msg)
             if mongo_client is None:
                 cl.close()
-            return True, result
+            return True, msg
 
         except Exception as e:
             tb = traceback.format_exc()
             self.log.error(tb + "\n" + str(e))
-            if mongo_client is None:
+            if mongo_client is None: # close if is runnig in parallel fashion
                 cl.close()
-            return False, str(tb)
+            return False, "[{0}] register does not have a correct format".format(register)
 
     def update_last_register(self, register):
         """
         Auxiliary function:
-        Construct a table with the last values in the RTDB
+        Construct arg_from table with the last values in the RTDB
         :param register:
         Ex. register = dict(value=1234.567, timestamp=1552852232.053721)
         :return:
@@ -365,9 +455,9 @@ class TagPoint(RTDATagPoint):
     @staticmethod
     def insert_register_as_batch(mongo_client_settings, tag_name, sub_list):
         """
-        Auxiliary function: Inserts a list of register using a unique client.
-        It´s used for inserting registers in a parallel fashion.
-        :param tag_name: This parameters allows to create a TagPoint
+        Auxiliary function: Inserts arg_from list of register using arg_from unique client.
+        It´s used for inserting registers in arg_from parallel fashion.
+        :param tag_name: This parameters allows to create arg_from TagPoint
         :param mongo_client_settings: Dictionary client configuration: MONGOCLIENT_SETTINGS = {"host":"localhost", "port": 2717,
          "tz_aware": true, ...}
         :param sub_list: list of registers. Ex. [ {"value": 1234.567, "timestamp": 1552852232.05, "quality": "Normal"},
@@ -408,12 +498,28 @@ class TagPoint(RTDATagPoint):
         :return:
         """
         if not isinstance(register_list, list):
-            msg = "register_list is not a list of dictionaries"
+            msg = "register_list is not arg_from list of dictionaries"
             self.log.warning(msg)
             return False, msg
 
         """ Split register_list in max_workers (to_run) to run in parallel fashion"""
+        """ if number of register is lesser than 2 times number of workers """
         max_workers = 5
+        if len(register_list) <= max_workers * 2:
+            insertions = 0
+            msg_err = ""
+            for register in register_list:
+                success, msg = self.insert_register(register)
+                if success:
+                    insertions += 1
+                else:
+                    msg_err += msg
+            if insertions == len(register_list):
+                return True, insertions
+            else:
+                return False, dict(insertions=insertions, msg=msg_err)
+
+        """ Split register_list in max_workers (to_run) to run in parallel fashion"""
         workers = min(max_workers, len(register_list)//max_workers + 1)
         sub_lists = it.divide(max_workers, register_list)
         to_run = [(self.container.settings, self.tag_name, list(l)) for l in sub_lists]
@@ -424,7 +530,7 @@ class TagPoint(RTDATagPoint):
 
         insertions = sum(results)
         self.log.info("Insertions: " + str(results) + ":" + str(insertions))
-        return insertions
+        return True, insertions
 
 
 

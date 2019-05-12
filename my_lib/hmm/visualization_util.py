@@ -1,8 +1,8 @@
 """"
     Created by Roberto Sánchez A, based on the Master Thesis:
-    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.a@gmail.com
+    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com
     to avoid intellectual property's problems.
 
     Not details about this code are included, if you need more information. Please contact the email above.

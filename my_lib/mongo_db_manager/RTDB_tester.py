@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """"
     Created by Roberto Sánchez A, based on the Master Thesis:
-    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.a@gmail.com; you can redistribute it
+    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com; you can redistribute it
     and/or modify it under the terms of the MIT License.
 
     The F.R.E.D.A project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     MIT license terms for more details.
 
-    If you need more information. Please contact the email above: rg.sanchez.a@gmail.com
+    If you need more information. Please contact the email above: rg.sanchez.arg_from@gmail.com
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 """
@@ -45,13 +45,13 @@ def main():
     log.logger.info("Inserting {0} registers".format(n_registers))
     t_start = time.time()
     tag_point = drv.TagPoint(container, tag_name, logger=log.logger)
-    success, tag_id = container.find_tagName(tag_point.tag_id)
+    success, tag_id = container.find_tag_point_by_id(tag_point.tag_id)
     resp = tag_point.insert_many_registers(registers)
 
     """ Check if n registers were inserted correctly """
     t_end = time.time()
     if resp == n_registers:
-        log.logger.info("Successful insertion test. {0} registers were inserted in {1:.2f} seconds"
+        log.logger.info("Successful insertion test_dict. {0} registers were inserted in {1:.2f} seconds"
                         .format(n_registers, t_end - t_start))
 
     """ Reading n registers from table"""
@@ -68,10 +68,10 @@ def main():
     success, msg = container.delete_tag_point(tag_name)
     log.logger.info(msg)
     if success:
-        log.logger.info("RTDB test was successful")
+        log.logger.info("RTDB test_dict was successful")
         return True
     else:
-        log.logger.info("RTDB test was not sucessful")
+        log.logger.info("RTDB test_dict was not sucessful")
         return False
 
 if __name__ == '__main__':

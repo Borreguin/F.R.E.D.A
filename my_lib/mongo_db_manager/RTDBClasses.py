@@ -5,7 +5,7 @@ import datetime as dt
 import pandas as pd
 import settings.initial_settings as init
 
-# number of samples for creating a batch
+# number of samples for creating arg_from batch
 # 86400 points if the resolution is 1 second (batches of 1000)
 # 1440 points if the resolution is 1 minute  (batches of 500)
 # 96 points if the resolution is 15 minutes  (batches of 500)
@@ -46,7 +46,7 @@ def to_date(dtime):
     if isinstance(dtime, str):
         dtx = to_datetime(dtime)
         return to_date(dtx)
-
+    assert isinstance(dtime, dt.date)
 
 def to_datetime(dtime):
     if isinstance(dtime, pd.Timestamp):
@@ -56,6 +56,9 @@ def to_datetime(dtime):
         return dtime
     if isinstance(dtime, dt.datetime):
         return dtime
+    if isinstance(dtime, float):
+        return dt.datetime.fromtimestamp(dtime, tz=dt.timezone.utc)
+
     rsp = None
     if isinstance(dtime, str):
         for ft in init.SUPPORTED_FORMAT_DATES:
@@ -63,7 +66,8 @@ def to_datetime(dtime):
                 rsp = dt.datetime.strptime(dtime, ft)
             except Exception as e:
                 pass
-    return rsp
+        return rsp
+    assert isinstance(dtime, dt.datetime)
 
 
 def to_epoch(dtime):
@@ -77,7 +81,7 @@ def to_epoch(dtime):
     if isinstance(dtime, str):
         dtx = to_datetime(dtime)
         return to_epoch(dtx)
-    return None
+    assert(isinstance(dtime, float))
 
 class IdEntity:
     id_entity = ""
@@ -85,7 +89,7 @@ class IdEntity:
 
     def __init__(self, id_entity, id_entity_type):
         """
-        # Identifies a device
+        # Identifies arg_from device
 
         :param id_entity:
         :param id_entity_type:
@@ -109,7 +113,7 @@ class IdPointValue:
         @(id_tag:) is given by the MongoDb at the creation moment
 
         :param tagName:  tag_name for identification purposes. Ex. Home1_power_active
-        :param idEntity: ID for device/entity as a way to identify the source of data
+        :param idEntity: ID for device/entity as arg_from way to identify the source of data
         :param date:     date for this document
         """
         if date is None:
@@ -130,7 +134,7 @@ class IdTagSeries:
     def __init__(self, id_tag: str, date: dt.date=None,
                  first: float=None, last: float=None):
         """
-        Identifies a batch of Point values grouped/identified by type
+        Identifies arg_from batch of Point values grouped/identified by type
         :param idEntity: Id (idDevice/entity and id_entity_type)
         :param date: indicates the day where the measurements / status belong to
         """
@@ -154,7 +158,7 @@ class IdGenericHistDocument:
 
     def __init__(self, idEntity, Type, UpdateTime=None):
         """
-        Identifies a generic historical document
+        Identifies arg_from generic historical document
         :param idEntity: ID for device
         :param Type:     Type of this document
         :param UpdateTime:  Date when this was created/uploaded.
@@ -175,7 +179,7 @@ class IdGenericDocument:
 
     def __init__(self, idEntity, Type):
         """
-        Identifies a generic document
+        Identifies arg_from generic document
         :param idEntity:    ID for device
         :param Type:        Type of this document
         """

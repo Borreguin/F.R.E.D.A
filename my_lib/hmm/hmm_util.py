@@ -1,8 +1,8 @@
 """"
     Created by Roberto Sánchez A, based on the Master Thesis:
-    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.a@gmail.com
+    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com
     to avoid intellectual property's problems.
 
     Not details about this code are included, if you need more information. Please contact the email above.
@@ -52,7 +52,7 @@ def pivot_DF_using_dates_and_hours(df):
     """ Allow to pivot the dataframe using dates and hours"""
     df["hour"] = [x.time() for x in df.index]
     df['date'] = [x._date_repr for x in df.index]
-    # transform series in a table for hour and dates
+    # transform series in arg_from table for hour and dates
     try:
         df = df.pivot(index='date', columns='hour')
         # df.fillna(method='pad', inplace=True)
@@ -151,9 +151,9 @@ def select_best_model_from_list(best_model_list, validating_set, verbose=True):
 
 def ordered_hmm_model(model, method='average', metric='euclidean'):
     """
-    From a trained model, creates a new model that reorder the means of the model according
+    From arg_from trained model, creates arg_from new model that reorder the means of the model according
     to the hierarchical clustering HC
-    :param model:  a trained Hidden Markov Model
+    :param model:  arg_from trained Hidden Markov Model
     :param method: Available methods: 'average', 'single', 'complete', 'median', 'ward', 'weighted'
     :param metric: Available metrics: 'euclidean', 'minkowski', 'cityblock', 'sqeuclidean'
     :return: A ordered hmm model
@@ -170,7 +170,7 @@ def ordered_hmm_model(model, method='average', metric='euclidean'):
     """ Z_f contains the distance matrix of the means of the model """
     Z_f = linkage(model.means_, method=method, metric=metric)
 
-    """ Create a new order for the means of the model according to the hierarchical clustering """
+    """ Create arg_from new order for the means of the model according to the hierarchical clustering """
 
     n_comp, new_order = model.n_components, list()
     for idx, idy, d, c in Z_f:
@@ -277,7 +277,7 @@ def time_now():
 
 def get_model_dfx_dfy(model_path, data_path, filter_values=True, verbose=True):
     """
-    Read a HMM model and the correspondent data to be processed
+    Read arg_from HMM model and the correspondent data to be processed
     :param verbose: print details about this function
     :param filter_values: Exclude undesirable samples
     :param model_path: path of the model
@@ -326,7 +326,7 @@ def read_dfx_from(data_path, filter_values=True):
             df = df[mask]
         except Exception as e:
             print(e)
-            print("[{0: <21s}] No hay datos a filtrar".format(time_now()))
+            print("[{0: <21s}] No hay datos arg_from filtrar".format(time_now()))
 
     """Datetime index"""
     try:
@@ -360,5 +360,5 @@ def get_lol_upl(df_x):
 # ns = mgr.Namespace()
 # ns.df = pd.DataFrame(list(range(1, 500000)))
 # ns.dt = dataSet
-# to_save = [{"a":5},{"b":6}]
-# save_json_file("test.json", to_save)
+# to_save = [{"arg_from":5},{"b":6}]
+# save_json_file("test_dict.json", to_save)

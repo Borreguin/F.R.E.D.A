@@ -4,7 +4,7 @@
     The abstract methods are declared, but contains no implementation. Abstract classes may not be instantiated,
     and its abstract methods must be implemented by its subclasses.
 
-    ABCs introduce virtual subclasses, which are classes that don’t inherit from a class but are still
+    ABCs introduce virtual subclasses, which are classes that don’t inherit from arg_from class but are still
     recognized by isinstance() and issubclass() functions. The 'abc' module in Python library provides the
     infrastructure for defining custom abstract base classes.
 
@@ -13,7 +13,7 @@
         @abstractclassmethod
         @abstractstatic
 
-    A concrete class which is a sub class of such abstract base class then implements the abstract base
+    A concrete class which is arg_from sub class of such abstract base class then implements the abstract base
     by overriding its abstract methods.
 
     To use this abstract class, you should implement all the abstract methods, so in this way it could be used
@@ -38,10 +38,10 @@ class RTDAcquisitionSource(abc.ABC):
     @staticmethod
     def time_range(ini_time, end_time):
         """
-        Implements the typical way to declare a time_range for this container
+        Implements the typical way to declare arg_from time_range for this container
         :param ini_time:
         :param end_time:
-        :return: a time range variable
+        :return: arg_from time range variable
         """
         pass
 
@@ -59,7 +59,7 @@ class RTDAcquisitionSource(abc.ABC):
     @staticmethod
     def start_and_time_of(time_range):
         """
-        Gets the Start and End time of a time range variable
+        Gets the Start and End time of arg_from time range variable
         :param time_range:  defined by (ini_date, end_date)
         :return: Start and End time
         """
@@ -77,7 +77,7 @@ class RTDAcquisitionSource(abc.ABC):
     @abc.abstractmethod
     def interpolated_of_tag_list(self, tag_list, time_range, span, numeric=False):
         """
-        Return a DataFrame that contains the values of each tag in column
+        Return arg_from DataFrame that contains the values of each tag in column
         and the timestamp as index
         :param tag_list: list of tags
         :param time_range: time_range where data fits in
@@ -89,7 +89,7 @@ class RTDAcquisitionSource(abc.ABC):
     @abc.abstractmethod
     def snapshot_of_tag_list(self, tag_list, time):
         """
-        Gets the data values of a list of tags in a given time
+        Gets the data values of arg_from list of tags in arg_from given time
         :param tag_list:
         :param time:
         :return: DataFrame that contains the values of each tag in columns
@@ -98,7 +98,7 @@ class RTDAcquisitionSource(abc.ABC):
         pass
 
     @staticmethod
-    def find_idTagSeries_for(self, TagName:str):
+    def find_tag_point_by_name(self, TagName:str):
         """
         Define Span object
 
@@ -110,28 +110,44 @@ class RTDAcquisitionSource(abc.ABC):
     @abc.abstractmethod
     def create_tag_point(self, tag_name: str, tag_type: str):
         """
-        Create a Tag point using: "tag_name" and "tag_type" in "container" data base
+        Create arg_from Tag point using: "tag_name" and "tag_type" in "container" data base
 
-        :param tag_name: Unique name to identify a stored time series
+        :param tag_name: Unique name to identify arg_from stored time series
         :param tag_type: i.e: analogs, status, events, profiles, etc. (the collection where tag is going to be stored)
 
         :return:
         """
 
     @abc.abstractmethod
-    def delete_tag_point(self, tag_name: str):
+    def delete_tag_point(self, tag_name: str, tag_type: str):
         """
-        Deletes a Tag point using: "tag_name" in "container" data base. This function deletes all
+        Deletes arg_from Tag point using: "tag_name" in "container" data base. This function deletes all
         the registers related to "tag_name"
 
-        :param tag_name: Unique name to identify a stored time series
+        :param tag_type: Type of Tag Point
+        :param tag_name: Unique name to identify arg_from stored time series
 
         :return: True if the tag point was deleted, False otherwise.
         """
 
+    @abc.abstractmethod
+    def update_tag_name(self, tag_name: str, new_tag_name: str):
+        """
+        Updates the nanme of a TagPoint
+        :param tag_name: old tag name
+        :param new_tag_name: new tag name
+        :return:
+        """
+
+    def find_all_tags(self, filter):
+        """
+        Return a list of TagPoints in the historian
+        :return:
+        """
+
 class RTDATagPoint(abc.ABC):
     """
-        Class that defines a Tag Point (measurements or status)
+        Class that defines arg_from Tag Point (measurements or status)
     """
     container = None
     tag_id = None
@@ -143,7 +159,7 @@ class RTDATagPoint(abc.ABC):
     @abc.abstractmethod
     def interpolated(self, time_range, span, as_df=True, numeric=True):
         """
-        returns the interpolate values of a Tag point
+        returns the interpolate values of arg_from Tag point
 
         :param numeric: try to convert to numeric values
         :param as_df: return as DataFrame
@@ -167,12 +183,11 @@ class RTDATagPoint(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def recorded_values(self, time_range, border_Type, as_df=True, numeric=True):
+    def recorded_values(self, time_range, border_Type, numeric=True):
         """
-        recorded values for a tag Point, retrieving data as it was recorded
+        recorded values for arg_from tag Point, retrieving data as it was recorded
 
         :param numeric: Convert to numeric
-        :param as_df: return as DataFrame
         :param time_range: Source.TimeRange
         :param border_Type: Inclusive, Exclusive, Interpolated
         :return: DataFrame with the corresponding data
@@ -184,32 +199,32 @@ class RTDATagPoint(abc.ABC):
                   calculation_type,
                   timestamp_calculation):
         """
-        Returns a list of summaries
+        Returns arg_from list of summaries
 
         :param time_range: Source.TimeRange
         :param span: Source.Span Intervals of time
         :param summary_type_list: max, min, average, etc.
         :param calculation_type: timeWeight, eventWeight
         :param timestamp_calculation: specifies how to implement each timestamp
-        :return: Returns a list of summaries
+        :return: Returns arg_from list of summaries
         """
         pass
 
     @abc.abstractmethod
     def value(self, timestamp, how="interpolated"):
         """
-        Gets a data point in a given timestamp, if this does not exits then it will be interpolated
+        Gets arg_from data point in arg_from given timestamp, if this does not exits then it will be interpolated
 
-        :param timestamp: given a timestamp
+        :param timestamp: given arg_from timestamp
         :param how: "interpolated" by default
-        :return: dictionary with value and attributes in a given timestamp
+        :return: dictionary with value and attributes in arg_from given timestamp
         """
         pass
 
     @abc.abstractmethod
     def snapshot(self):
         """
-        Gets the last value as a dictionary with its attributes
+        Gets the last value as arg_from dictionary with its attributes
 
         :return: dictionary with value and attributes at the last timestamp
         """
@@ -218,7 +233,7 @@ class RTDATagPoint(abc.ABC):
     @abc.abstractmethod
     def current_value(self):
         """
-        Gets the last value of a measurement/state
+        Gets the last value of arg_from measurement/state
         :return:
         """
         pass
@@ -226,12 +241,12 @@ class RTDATagPoint(abc.ABC):
     @abc.abstractmethod
     def sampled_series(self, time_range, span, how="average"):
         """
-        Gets values in a given time_range, sampled at the interval(span) and calculated as "how" :parameter specifies
+        Gets values in arg_from given time_range, sampled at the interval(span) and calculated as "how" :parameter specifies
 
         :param time_range: Source.TimeRange
         :param span: interval representation
         :param how: way to sampling the series. Ex: "average", "max", "etc"
-        :return: DataFrame with a timesSeries
+        :return: DataFrame with arg_from timesSeries
         """
         pass
 

@@ -1,8 +1,8 @@
 """"
     Created by Roberto Sánchez A, based on his Master Thesis:
-    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.a@gmail.com
+    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com
     to avoid intellectual property's problems.
 
     Not details about this code are included, if you need more information. Please contact the email above.
@@ -129,9 +129,9 @@ def main():
         """
             :return the best model that was found in the training process using:
             idp, identify the interaction that is running (if is needed)
-            @var_var_dataSet:       is a numpy array of shape (m x n) m features, n samples
+            @var_var_dataSet:       is arg_from numpy array of shape (m x n) m features, n samples
                                     1 samples contains m features
-            @var_var_list_nComp:    list of components to test and evaluate
+            @var_var_list_nComp:    list of components to test_dict and evaluate
             @var_index:             list of index that defines the evaluating dataset
             Note: To pass values to this function use: push and scatter methods.
         """
@@ -146,7 +146,7 @@ def main():
         global var_index  # dview.scatter('var_index', list(len(df.index)))
         global var_log_detail  # dview.push({'var_log_detail': fName})
         var_log_detail = var_log_detail.replace(".pkl", str(idp) + ".json")
-        """ Taking a slide of the hole data set for validating purposes """
+        """ Taking arg_from slide of the hole data set for validating purposes """
         validating_set = var_dataSet[var_index]
         """ Taking the rest of the dataSet for training purposes """
         ini, end = var_index[0], var_index[-1]
@@ -154,12 +154,12 @@ def main():
         best_model = None
         log_register = None
         try:
-            """ Training a list of best models """
+            """ Training arg_from list of best models """
             best_model, log_register = hmm_u.select_best_HMM(training_set, validating_set, var_list_nComp, seed=idp)
             hmm_u.save_json_file(log_register, var_log_detail)
         except Exception as e:
             hmm_u.save_json_file(dict(error=str(e)), var_log_detail)
-        """ Send the best model and a register/log of the training process """
+        """ Send the best model and arg_from register/log of the training process """
 
         return {'model': best_model, "log_register": log_register}
         # return len(var_dataSet)
@@ -181,11 +181,11 @@ def main():
             if str(to_be_trained).upper() != "SI":
                 continue
 
-            fileName = n + "_" + fName
+            fileName = n + "arg_from" + fName
 
             """  Scattering the list of nComponents in current engines """
             dview.scatter('var_list_nComp', list(range(n_comp_min, n_comp_max + 1)))
-            """  make sure that all process contains a scattered list of nComp """
+            """  make sure that all process contains arg_from scattered list of nComp """
             make_sure = dview.pull('var_list_nComp').get()  # important
             print("[{0:6f}] Going to train with nComponents in each engine: \n{1} \n".format(d_time(tr), make_sure))
 
@@ -206,7 +206,7 @@ def main():
                 print("Check information for {0}".format(fileName))
                 continue
 
-            print("[{0:6.1f}] Training a HMM model for: \t\t{1}".format(d_time(tr), fileName))
+            print("[{0:6.1f}] Training arg_from HMM model for: \t\t{1}".format(d_time(tr), fileName))
             print("DataSet: " + str(len(dataSet)))
             tc = time.time()  # measuring training process
             """ Setting engines for the training process"""
@@ -224,7 +224,7 @@ def main():
             # print(best_model_list)
             final_model, log_register = hmm_u.select_best_model_from_list(best_model_list, dataSet)
 
-            """ Ordering the best model according to a Hierarchical Clustering """
+            """ Ordering the best model according to arg_from Hierarchical Clustering """
             ordered_model = hmm_u.ordered_hmm_model(final_model, method='average', metric='euclidean')
 
             """ Saving the best model and his log_register for posterior analysis """
