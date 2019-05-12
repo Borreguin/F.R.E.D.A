@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """"
       Created by Roberto Sánchez A, based on the Master Thesis:
-    "A proposed method for unsupervised anomaly detection for arg_from multivariate building dataset "
+    "A proposed method for unsupervised anomaly detection for a multivariate building dataset "
     University of Bern/Neutchatel/Fribourg - 2017
-    Any copy of this code should be notified at rg.sanchez.arg_from@gmail.com; you can redistribute it
+    Any copy of this code should be notified at rg.sanchez.a@gmail.com; you can redistribute it
     and/or modify it under the terms of the MIT License.
 
     The F.R.E.D.A project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -65,7 +65,7 @@ def initialize_app(flask_app):
 #    api.add_resource(api_sr.RecordedValues,'/recorded-values/<string:tag_name>',
 #                     '/recorded-values/<string:tag_name>/<string:start_time>/<string:end_time>')
 
-    """ Tag TimeSeries (interpolated values using arg_from specific span between start_time and end_time """
+    """ Tag TimeSeries (interpolated values using a specific span between start_time and end_time """
 #    api.add_resource(api_sr.InterpolatedValues, '/interpolated-values/<string:tag_name>',
 #                     '/interpolated-values/<string:tag_name>/<string:start_time>/<string:end_time>/<string:span>')
 
