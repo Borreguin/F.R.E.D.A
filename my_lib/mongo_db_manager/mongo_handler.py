@@ -110,7 +110,7 @@ def check():
     lg = init.LogDefaultConfig()
     lg.logger.setLevel(logging.INFO)
 
-    """ Starting the test """
+    """ Starting the test_dict """
     lg.logger.info("Starting ")
     n_registers = 10000
     workers = 5
@@ -131,10 +131,10 @@ def check():
     if con and n_registers==ins:
         client = mClient.client
         client.drop_database(DB_test)
-        msg = "Successful test"
+        msg = "Successful test_dict"
         lg.logger.info(msg)
     else:
-        msg = "Unsuccessful test"
+        msg = "Unsuccessful test_dict"
         lg.logger.error(msg)
 
     return True

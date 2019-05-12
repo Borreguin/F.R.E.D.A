@@ -98,7 +98,7 @@ class RTDAcquisitionSource(abc.ABC):
         pass
 
     @staticmethod
-    def find_idTagSeries_for(self, TagName:str):
+    def find_tag_point_by_name(self, TagName:str):
         """
         Define Span object
 
@@ -119,14 +119,30 @@ class RTDAcquisitionSource(abc.ABC):
         """
 
     @abc.abstractmethod
-    def delete_tag_point(self, tag_name: str):
+    def delete_tag_point(self, tag_name: str, tag_type: str):
         """
         Deletes a Tag point using: "tag_name" in "container" data base. This function deletes all
         the registers related to "tag_name"
 
+        :param tag_type: Type of Tag Point
         :param tag_name: Unique name to identify a stored time series
 
         :return: True if the tag point was deleted, False otherwise.
+        """
+
+    @abc.abstractmethod
+    def update_tag_name(self, tag_name: str, new_tag_name: str):
+        """
+        Updates the nanme of a TagPoint
+        :param tag_name: old tag name
+        :param new_tag_name: new tag name
+        :return:
+        """
+
+    def find_all_tags(self, filter):
+        """
+        Return a list of TagPoints in the historian
+        :return:
         """
 
 class RTDATagPoint(abc.ABC):
@@ -167,12 +183,11 @@ class RTDATagPoint(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def recorded_values(self, time_range, border_Type, as_df=True, numeric=True):
+    def recorded_values(self, time_range, border_Type, numeric=True):
         """
         recorded values for a tag Point, retrieving data as it was recorded
 
         :param numeric: Convert to numeric
-        :param as_df: return as DataFrame
         :param time_range: Source.TimeRange
         :param border_Type: Inclusive, Exclusive, Interpolated
         :return: DataFrame with the corresponding data

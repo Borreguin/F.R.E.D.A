@@ -46,7 +46,7 @@ def to_date(dtime):
     if isinstance(dtime, str):
         dtx = to_datetime(dtime)
         return to_date(dtx)
-
+    assert isinstance(dtime, dt.date)
 
 def to_datetime(dtime):
     if isinstance(dtime, pd.Timestamp):
@@ -56,6 +56,9 @@ def to_datetime(dtime):
         return dtime
     if isinstance(dtime, dt.datetime):
         return dtime
+    if isinstance(dtime, float):
+        return dt.datetime.fromtimestamp(dtime, tz=dt.timezone.utc)
+
     rsp = None
     if isinstance(dtime, str):
         for ft in init.SUPPORTED_FORMAT_DATES:
@@ -63,7 +66,8 @@ def to_datetime(dtime):
                 rsp = dt.datetime.strptime(dtime, ft)
             except Exception as e:
                 pass
-    return rsp
+        return rsp
+    assert isinstance(dtime, dt.datetime)
 
 
 def to_epoch(dtime):
@@ -77,7 +81,7 @@ def to_epoch(dtime):
     if isinstance(dtime, str):
         dtx = to_datetime(dtime)
         return to_epoch(dtx)
-    return None
+    assert(isinstance(dtime, float))
 
 class IdEntity:
     id_entity = ""

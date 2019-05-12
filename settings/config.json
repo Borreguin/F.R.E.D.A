@@ -2,9 +2,20 @@
   "name": "settings",
   "version": "0.0.1",
 
+  "FLASK_SERVER_NAME": "localhost:7070",
+  "FLASK_DEBUG": true,
+
+  "RESTPLUS_SWAGGER_UI_DOC_EXPANSION" : "list",
+  "RESTPLUS_VALIDATE" : true,
+  "RESTPLUS_MASK_SWAGGER" : false,
+  "RESTPLUS_ERROR_404_HELP" : false,
+
+  "SQLALCHEMY_DATABASE_URI": "sqlite:///db.sqlite",
+  "SQLALCHEMY_TRACK_MODIFICATIONS": false,
+
   "ROTATING_FILE_HANDLER_HELP": "https://docs.python.org/3.6/library/logging.handlers.html#logging.handlers.RotatingFileHandler.__init__",
-  "ROTATING_FILE_HANDLER": {"filename":"freda.log", "maxBytes":10000, "backupCount":5, "mode":"a"},
-  "ROTATING_FILE_HANDLER_LOG_LEVEL": {"value": "error", "options":["error", "warning", "info", "debug", "off"]},
+  "ROTATING_FILE_HANDLER": {"filename":"freda.log", "maxBytes":100000, "backupCount":5, "mode":"a"},
+  "ROTATING_FILE_HANDLER_LOG_LEVEL": {"value": "info", "options":["error", "warning", "info", "debug", "off"]},
 
   "MONGOCLIENT_SETTINGS": {"host":"localhost", "port": 2717, "tz_aware": true},
   "MONGO_LOG_LEVEL_OPTIONS": ["ON", "OFF"],
@@ -19,5 +30,6 @@
   "CL_TAG_LIST": "CATL_TAGS",
   "CL_LAST_VALUES": "SUMM_LAST_VALUES",
 
-  "SUPPORTED_FORMAT_DATES": ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f"]
+  "SUPPORTED_FORMAT_DATES": ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y-%m-%d %H:%M:%S.%f"],
+  "DEFAULT_DATE_FORMAT": "%Y-%m-%d %H:%M:%S"
 }
