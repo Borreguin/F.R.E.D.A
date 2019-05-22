@@ -2,7 +2,7 @@
   "name": "settings",
   "version": "0.0.1",
 
-  "FLASK_SERVER_NAME": "localhost:7070",
+  "FLASK_SERVER_NAME": "localhost:7077",
   "FLASK_DEBUG": true,
 
   "RESTPLUS_SWAGGER_UI_DOC_EXPANSION" : "list",
@@ -27,8 +27,8 @@
 
   "DB_NAME" : "DB_FREDA",
   "DB_TIME_SERIES": "DB_TIME_SERIES",
-  "CL_TAG_LIST": "CATL_TAGS",
-  "CL_LAST_VALUES": "SUMM_LAST_VALUES",
+  "CL_TAG_LIST": "CATL|TAGS",
+  "CL_LAST_VALUES": "SUMM|LAST_VALUES",
 
   "SUPPORTED_FORMAT_DATES": ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y-%m-%d %H:%M:%S.%f"],
   "DEFAULT_DATE_FORMAT": "%Y-%m-%d %H:%M:%S"

@@ -13,7 +13,7 @@ import sys, traceback
 import more_itertools as it
 from multiprocessing import Pool
 import logging
-
+from my_lib.mongo_db_manager import RTDB_system as sys_h
 
 DBTimeSeries = init.DB_MONGO_NAME
 CollectionTagList = init.CL_TAG_LIST
@@ -138,7 +138,12 @@ class RTContainer(RTDAcquisitionSource):
             return False, list()
 
     def create_tag_point(self, tag_name: str, tag_type: str="generic"):
-        tag_type = "TSCL_" + tag_type.upper().strip()
+        if len(tag_type) <= 0:
+            tag_type = "generic"
+        if "|" not in tag_type:
+            tag_type = "TSCL|" + tag_type
+        if "$" in tag_type:
+            tag_type.replace("$", "*")
         tag_name = tag_name.upper().strip()
 
         db = self.container[DBTimeSeries]
@@ -193,7 +198,9 @@ class RTContainer(RTDAcquisitionSource):
                 self.log.error(msg + "\n" + str(e))
 
         if len(msg) == 0:
-            return True, "Tag point {0} was deleted".format(tag_name)
+            msg = "Tag point {0} was deleted".format(tag_name)
+            self.log.info(msg)
+            return True, msg
         else:
             return False, msg
 
@@ -398,7 +405,11 @@ class TagPoint(RTDATagPoint):
                                                 # to query correctly the tag_id should be used
                                            }, upsert=True)
             if update_last:
+                # In a batch mode is not necessary to save each register
+                # update and number of insertions are done at the end of the operation
                 self.update_last_register(register)
+                sys_h.register_insertions(1)
+
             msg = "[{0}] One register was successfully inserted ".format(self.tag_name)
             self.log.debug(msg)
             if mongo_client is None:
@@ -506,18 +517,10 @@ class TagPoint(RTDATagPoint):
         """ if number of register is lesser than 2 times number of workers """
         max_workers = 5
         if len(register_list) <= max_workers * 2:
-            insertions = 0
-            msg_err = ""
-            for register in register_list:
-                success, msg = self.insert_register(register)
-                if success:
-                    insertions += 1
-                else:
-                    msg_err += msg
-            if insertions == len(register_list):
-                return True, insertions
-            else:
-                return False, dict(insertions=insertions, msg=msg_err)
+            insertions= self.insert_register_as_batch(self.container.settings, tag_name=self.tag_name, sub_list=register_list)
+            sys_h.register_insertions(insertions)
+            self.log.info("Insertions: " + str(insertions))
+            return True, insertions
 
         """ Split register_list in max_workers (to_run) to run in parallel fashion"""
         workers = min(max_workers, len(register_list)//max_workers + 1)
@@ -530,6 +533,7 @@ class TagPoint(RTDATagPoint):
 
         insertions = sum(results)
         self.log.info("Insertions: " + str(results) + ":" + str(insertions))
+        sys_h.register_insertions(insertions)
         return True, insertions
 
 
