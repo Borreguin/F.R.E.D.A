@@ -13,7 +13,7 @@ import sys, traceback
 import more_itertools as it
 from multiprocessing import Pool
 import logging
-
+from my_lib.mongo_db_manager import RTDB_system as sys_h
 
 DBTimeSeries = init.DB_MONGO_NAME
 CollectionTagList = init.CL_TAG_LIST
@@ -138,7 +138,12 @@ class RTContainer(RTDAcquisitionSource):
             return False, list()
 
     def create_tag_point(self, tag_name: str, tag_type: str="generic"):
-        tag_type = "TSCL_" + tag_type.upper().strip()
+        if len(tag_type) <= 0:
+            tag_type = "generic"
+        if "|" not in tag_type:
+            tag_type = "TSCL|" + tag_type
+        if "$" in tag_type:
+            tag_type.replace("$", "*")
         tag_name = tag_name.upper().strip()
 
         db = self.container[DBTimeSeries]
@@ -193,7 +198,9 @@ class RTContainer(RTDAcquisitionSource):
                 self.log.error(msg + "\n" + str(e))
 
         if len(msg) == 0:
-            return True, "Tag point {0} was deleted".format(tag_name)
+            msg = "Tag point {0} was deleted".format(tag_name)
+            self.log.info(msg)
+            return True, msg
         else:
             return False, msg
 
@@ -211,7 +218,7 @@ class TagPoint(RTDATagPoint):
 
     def __init__(self, container: RTContainer, tag_name: str, logger: logging.Logger=None):
         """
-        Creates a TagPoint that allows to manage the corresponding time series.
+        Creates arg_from TagPoint that allows to manage the corresponding time series.
 
         :param container: defines the container of the data
         :param tag_name: name of the tag
@@ -345,8 +352,8 @@ class TagPoint(RTDATagPoint):
 
     def insert_register(self, register: dict, update_last=True, mongo_client: pm.MongoClient=None):
         """
-        Insert a new register in the RTDB. Note: update a register must not be done with this function
-        "insert_register" insert a register without checking the timestamp value (for fast writing).
+        Insert arg_from new register in the RTDB. Note: update arg_from register must not be done with this function
+        "insert_register" insert arg_from register without checking the timestamp value (for fast writing).
         register dictionaries are saved in the key-value record.
 
         "series":[ {"value": 1234.567, "timestamp": 1552852232.05, "quality": "Normal"},
@@ -398,7 +405,11 @@ class TagPoint(RTDATagPoint):
                                                 # to query correctly the tag_id should be used
                                            }, upsert=True)
             if update_last:
+                # In a batch mode is not necessary to save each register
+                # update and number of insertions are done at the end of the operation
                 self.update_last_register(register)
+                sys_h.register_insertions(1)
+
             msg = "[{0}] One register was successfully inserted ".format(self.tag_name)
             self.log.debug(msg)
             if mongo_client is None:
@@ -415,7 +426,7 @@ class TagPoint(RTDATagPoint):
     def update_last_register(self, register):
         """
         Auxiliary function:
-        Construct a table with the last values in the RTDB
+        Construct arg_from table with the last values in the RTDB
         :param register:
         Ex. register = dict(value=1234.567, timestamp=1552852232.053721)
         :return:
@@ -455,9 +466,9 @@ class TagPoint(RTDATagPoint):
     @staticmethod
     def insert_register_as_batch(mongo_client_settings, tag_name, sub_list):
         """
-        Auxiliary function: Inserts a list of register using a unique client.
-        It´s used for inserting registers in a parallel fashion.
-        :param tag_name: This parameters allows to create a TagPoint
+        Auxiliary function: Inserts arg_from list of register using arg_from unique client.
+        It´s used for inserting registers in arg_from parallel fashion.
+        :param tag_name: This parameters allows to create arg_from TagPoint
         :param mongo_client_settings: Dictionary client configuration: MONGOCLIENT_SETTINGS = {"host":"localhost", "port": 2717,
          "tz_aware": true, ...}
         :param sub_list: list of registers. Ex. [ {"value": 1234.567, "timestamp": 1552852232.05, "quality": "Normal"},
@@ -498,7 +509,7 @@ class TagPoint(RTDATagPoint):
         :return:
         """
         if not isinstance(register_list, list):
-            msg = "register_list is not a list of dictionaries"
+            msg = "register_list is not arg_from list of dictionaries"
             self.log.warning(msg)
             return False, msg
 
@@ -506,18 +517,10 @@ class TagPoint(RTDATagPoint):
         """ if number of register is lesser than 2 times number of workers """
         max_workers = 5
         if len(register_list) <= max_workers * 2:
-            insertions = 0
-            msg_err = ""
-            for register in register_list:
-                success, msg = self.insert_register(register)
-                if success:
-                    insertions += 1
-                else:
-                    msg_err += msg
-            if insertions == len(register_list):
-                return True, insertions
-            else:
-                return False, dict(insertions=insertions, msg=msg_err)
+            insertions= self.insert_register_as_batch(self.container.settings, tag_name=self.tag_name, sub_list=register_list)
+            sys_h.register_insertions(insertions)
+            self.log.info("Insertions: " + str(insertions))
+            return True, insertions
 
         """ Split register_list in max_workers (to_run) to run in parallel fashion"""
         workers = min(max_workers, len(register_list)//max_workers + 1)
@@ -530,6 +533,7 @@ class TagPoint(RTDATagPoint):
 
         insertions = sum(results)
         self.log.info("Insertions: " + str(results) + ":" + str(insertions))
+        sys_h.register_insertions(insertions)
         return True, insertions
 
 

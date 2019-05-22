@@ -107,11 +107,11 @@ class Tag(Resource):
         Creates a new TagPoint
         """
         request_data = request.json
-        tag_name = request_data["tag_name"]
+        tag_name = request_data.pop("tag_name")
         cntr = dr.RTContainer()
         try:
             if "tag_type" in request_data.keys():
-                if len(request_data["tag_type"]) <= 0 or request_data["tag_type"] == "string":
+                if len(request_data["tag_type"]) <= 0:
                     request_data["tag_type"] = "generic"
                 success, result = cntr.create_tag_point(tag_name, request_data["tag_type"])
             else:
