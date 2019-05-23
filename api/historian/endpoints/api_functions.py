@@ -43,7 +43,9 @@ def time_range_validation_w_format_time(start_time, end_time, format_time=None):
             log.warning("[{0}] is not in the supported format dates")
         try:
             start_time = dt.datetime.strptime(start_time, format_time)
+            start_time.replace(tzinfo=dt.timezone.utc)
             end_time = dt.datetime.strptime(end_time, format_time)
+            end_time.replace(tzinfo=dt.timezone.utc)
             return start_time, end_time, format_time
         except Exception as e:
             tb = traceback.format_exc()

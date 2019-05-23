@@ -19,6 +19,7 @@ import traceback
 from my_lib.mongo_db_manager import RTDB_mongo_driver as drv
 from settings import initial_settings as init
 from datetime import datetime as dt
+from datetime import timezone as tz
 import os
 from settings.initial_settings import DB_MONGO_NAME as rtdb
 
@@ -33,8 +34,10 @@ def register_insertions(number_insertions, recursive=0):
     try:
         tag_point = drv.TagPoint(cnt, INSERTION_TAG)
         assert(tag_point.tag_type is not None)
-        register = dict(timestamp=dt.now().timestamp(), value=number_insertions)
+        timestamp = dt.now()
+        register = dict(timestamp=timestamp, value=number_insertions)
         success, result = tag_point.insert_register(register, update_last=False)
+        tag_point.update_last_register(register)
         cnt.close()
         if success:
             return True, "[{0}] update".format(INSERTION_TAG)

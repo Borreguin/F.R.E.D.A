@@ -41,3 +41,8 @@ range_time.add_argument("format_time", type=str, required=False, default="%Y-%m-
 range_time_with_span = range_time.copy()
 range_time_with_span.add_argument("span", type=str, help="./help/span",
                                   required=False, default="15 min")
+
+""" arguments for registers service """
+tag_list = reqparse.RequestParser()
+tag_list.add_argument("tag_names", type=list, help="List of tag_names",
+                      required=True, default=["dev1.tag1", "dev2.tag2", "dev3.tag3"])
