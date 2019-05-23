@@ -55,3 +55,20 @@ register = api.model("Register", {
 register_list = api.model("List of registers",{
     "registers": fields.List(fields.Nested(register))
 })
+
+""" serializers for registers """
+register_tag_name = api.model("TagRegister", {
+    "tag_name": fields.String(description="Tag_name for the TagPoint", required=True, default="tag_name_1"),
+    "value": fields.Float(description="Value to save.", required=True, default=1.23),
+    "timestamp": fields.String(description="Timestamp",
+                              required=True, default="yyyy-mm-dd H:M:S")
+})
+
+register_tag_name_list = api.model("List of Tag registers",{
+    "registers": fields.List(fields.Nested(register_tag_name))}
+)
+
+tag_name_list = api.model("List of tag_names",{
+    "tag_names": fields.List(fields.String, description="Tagnames", action='append',
+                             required=True, default=["dev1.tag1", "dev2.tag2", "dev3.tag3"])}
+)

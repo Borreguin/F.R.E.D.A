@@ -138,13 +138,10 @@ class RTContainer(RTDAcquisitionSource):
             return False, list()
 
     def create_tag_point(self, tag_name: str, tag_type: str="generic"):
-        if len(tag_type) <= 0:
-            tag_type = "generic"
-        if "|" not in tag_type:
-            tag_type = "TSCL|" + tag_type
-        if "$" in tag_type:
-            tag_type.replace("$", "*")
-        tag_name = tag_name.upper().strip()
+
+        success, tag_name, tag_type = self.validate_name(tag_name, tag_type)
+        if not success:
+            return False, "Incorrect name"
 
         db = self.container[DBTimeSeries]
         cl_tag_list = db[CollectionTagList]
@@ -169,6 +166,26 @@ class RTContainer(RTDAcquisitionSource):
             msg = "[{0}] This tag already exists, duplicated-tag warning".format(tag_name)
             self.log.warning(msg + "\n" + str(e))
             return False, msg
+
+    def validate_name(self, tag_name: str, tag_type:str ):
+        tag_name = tag_name.upper().strip()
+        tag_type = tag_type.upper().strip()
+
+        if len(tag_type) <= 0:
+            tag_type = "generic"
+        if "|" not in tag_type:
+            tag_type = "TSCL|" + tag_type
+        if "$" in tag_type:
+            tag_type.replace("$", "*")
+
+        if len(tag_name) == 0:
+            return False, tag_name, tag_type
+
+        tag_name = re.sub(",", "*", tag_name)
+        tag_name = re.sub(":", "*", tag_name)
+        tag_name = re.sub(";", "*", tag_name)
+
+        return True, tag_name, tag_type
 
     def delete_tag_point(self, tag_name: str, tag_type: str):
         tag_point = TagPoint(self, tag_name, self.log)
@@ -218,7 +235,7 @@ class TagPoint(RTDATagPoint):
 
     def __init__(self, container: RTContainer, tag_name: str, logger: logging.Logger=None):
         """
-        Creates arg_from TagPoint that allows to manage the corresponding time series.
+        Creates a TagPoint that allows to manage the corresponding time series.
 
         :param container: defines the container of the data
         :param tag_name: name of the tag
@@ -291,7 +308,7 @@ class TagPoint(RTDATagPoint):
         df_series.set_index(["timestamp"], inplace=True)
         df_series.index = pd.to_datetime(df_series.index, unit='s', utc=True)
         df_series.sort_index(inplace=True)
-        df_series.drop_duplicates(inplace=True)
+        df_series = df_series.loc[~df_series.index.duplicated(keep='first')]
         # inclusive:
         mask = None
         if border_type == "Inclusive":
@@ -324,7 +341,10 @@ class TagPoint(RTDATagPoint):
     def snapshot(self):
         pass
 
-    def current_value(self, fmt:str=None):
+    def current_value(self, fmt: str=None):
+        if self.tag_id is None:
+            return False, "[{0}] does not exists. ".format(self.tag_name)
+
         db = self.container.container[DBTimeSeries]
         collection = db[CollectionLastValues]
         try:
@@ -352,8 +372,8 @@ class TagPoint(RTDATagPoint):
 
     def insert_register(self, register: dict, update_last=True, mongo_client: pm.MongoClient=None):
         """
-        Insert arg_from new register in the RTDB. Note: update arg_from register must not be done with this function
-        "insert_register" insert arg_from register without checking the timestamp value (for fast writing).
+        Insert a new register in the RTDB. Note: update a register must not be done with this function.
+        Function "insert_register" inserts a register without checking the timestamp value (for fast writing).
         register dictionaries are saved in the key-value record.
 
         "series":[ {"value": 1234.567, "timestamp": 1552852232.05, "quality": "Normal"},
@@ -361,6 +381,8 @@ class TagPoint(RTDATagPoint):
 
         The inserted register is saved in "tag_type" collection. Possible collections are: "analogs",
         "status", "events", "generics"
+
+
         :param mongo_client: if is needed (useful for parallel insertion)
         :param update_last: By default must be True, it update the last value inserted in the data base
         :param register: dictionary with attributes for: (timestamp is UNIX UTC value)
@@ -412,21 +434,21 @@ class TagPoint(RTDATagPoint):
 
             msg = "[{0}] One register was successfully inserted ".format(self.tag_name)
             self.log.debug(msg)
-            if mongo_client is None:
+            if mongo_client is None: # close if is not running in parallel fashion
                 cl.close()
             return True, msg
 
         except Exception as e:
             tb = traceback.format_exc()
             self.log.error(tb + "\n" + str(e))
-            if mongo_client is None: # close if is runnig in parallel fashion
+            if mongo_client is None: # close if is not running in parallel fashion
                 cl.close()
             return False, "[{0}] register does not have a correct format".format(register)
 
     def update_last_register(self, register):
         """
         Auxiliary function:
-        Construct arg_from table with the last values in the RTDB
+        Construct a table with the last values in the RTDB
         :param register:
         Ex. register = dict(value=1234.567, timestamp=1552852232.053721)
         :return:
@@ -466,9 +488,9 @@ class TagPoint(RTDATagPoint):
     @staticmethod
     def insert_register_as_batch(mongo_client_settings, tag_name, sub_list):
         """
-        Auxiliary function: Inserts arg_from list of register using arg_from unique client.
-        It´s used for inserting registers in arg_from parallel fashion.
-        :param tag_name: This parameters allows to create arg_from TagPoint
+        Auxiliary function: Inserts a list of register using a unique client.
+        It´s used for inserting registers in a parallel fashion.
+        :param tag_name: This parameters allows to create a TagPoint
         :param mongo_client_settings: Dictionary client configuration: MONGOCLIENT_SETTINGS = {"host":"localhost", "port": 2717,
          "tz_aware": true, ...}
         :param sub_list: list of registers. Ex. [ {"value": 1234.567, "timestamp": 1552852232.05, "quality": "Normal"},
@@ -500,16 +522,18 @@ class TagPoint(RTDATagPoint):
 
         The inserted register is saved in "tag_type" collection. Possible collections are: "analogs",
         "status", "events", "generics"
+
+
         :param register_list: dictionary or list with attributes for the measurement:
         Ex. register = [{"value":1.23, "timestamp":1552852232.053721, "quality": "Normal"},
         {"value":12.3, "timestamp":1552852282.08, "quality": "Normal"}, ... ]
 
         Note: The internal value of "tag_name" is only for human reference checking, to query correctly
         the "tag_id" should be used
-        :return:
+        :return: {Success (True, False)}, {if success -> # insertions, else -> error msg}
         """
         if not isinstance(register_list, list):
-            msg = "register_list is not arg_from list of dictionaries"
+            msg = "register_list is not a list of dictionaries"
             self.log.warning(msg)
             return False, msg
 

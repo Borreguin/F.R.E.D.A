@@ -147,7 +147,7 @@ class Tag(Resource):
 
 @ns.route('/tags')
 @ns.route('/tags/<string:filter_exp>')
-class New_Update_Tag(Resource):
+class NewUpdateTag(Resource):
 
     def get(self, filter_exp=None):
         """
@@ -165,7 +165,7 @@ class SnapShoot(Resource):
     @api.expect(arg_from.format_time)
     def get(self, tag_name):
         """
-            Returns a snapshoot for an Analog TagPoint at current time
+            Returns a SnapShoot for an Analog TagPoint {tag_name} at current time (last_value) with {time_format}
         """
         args = arg_from.format_time.parse_args(request)
         fmt = args.get("format_time", None)
@@ -209,7 +209,7 @@ class RecordedValues(Resource):
     @api.expect(arg_from.range_time)
     def get(self, tag_name):
         """
-        Returns a list of registers between {start_time} and {end_time}
+        Returns a list of registers between {start_time} and {end_time} for a specific {tag_name}
         """
         args = arg_from.range_time.parse_args(request)
         start_time = args.get("start_time", None)
@@ -235,7 +235,7 @@ class RecordedValues(Resource):
     @api.expect(ser_from.register_list)
     def post(self, tag_name):
         """
-        Inserts a list of new registers for a TagPoint
+        Inserts a list of new registers for a TagPoint {tag_name}
         """
         request_data = request.data
         try:
@@ -255,7 +255,7 @@ class InterpolatedValues(Resource):
 
     @api.expect(arg_from.range_time_with_span)
     def get(self, tag_name):
-        """ Returns a interpolated time series """
+        """ Returns a interpolated time series for {tag_name} from {start_time} to {end_time} in {span} intervals"""
         args = arg_from.range_time_with_span.parse_args(request)
         start_time = args.get("start_time", None)
         end_time = args.get("end_time", None)
@@ -281,3 +281,67 @@ class InterpolatedValues(Resource):
             tb = traceback.format_exc()
             log.error(str(e) + "\n" + str(tb))
             return dict(success=False, result="Unable to recognize span parameter. Help: \n" + str(apf.freq_options))
+
+
+@ns.route('/registers')
+class RegistersForTags(Resource):
+
+    @api.expect(arg_from.tag_list)
+    def get(self):
+        """ Returns the last registers values for a {list of tag_names} """
+        args = arg_from.tag_list.parse_args()["tag_names"]
+        tag_names = ''.join(args).split(',')
+        if tag_names is None:
+            return dict(success=False, result=dict(), error="Unable to recognize list of tags")
+        list_reg = list()
+        cntr = dr.RTContainer()
+        err = str()
+        success_acc = True
+        for tag_name in tag_names:
+            tag_point = dr.TagPoint(cntr, tag_name)
+            success, reg = tag_point.current_value()
+            if success:
+                success_acc = (success and True)
+                reg["tag_name"] = tag_name
+                list_reg.append(reg)
+            else:
+                success_acc = (success and False)
+                err += reg
+        cntr.close()
+        return dict(succes=success_acc, result=list_reg, error=err)
+
+    @api.expect(ser_from.register_tag_name_list)
+    def post(self):
+        """ Post registers for several TagPoints.
+            The expected structure should have the {tag_name}, {timestamp} and {value}, others attributes can be added
+            Ex: [{"tag_name": "dev1.voltaje", "timestamp": "2019-01-01",
+            "value": 12.5, "quality": "normal", ...}, {...}]
+        """
+        request_data = request.data
+        err = str()
+        insertions = 0
+        cntr = dr.RTContainer()
+        try:
+            register_list = json.loads(request_data)["registers"]
+            success_acc = True
+            for register in register_list:
+                tag_name = register.pop("tag_name")
+                tag_point = dr.TagPoint(cntr, tag_name)
+                if tag_point.tag_id is None:
+                    err += "[{0}] does not exist. ".format(tag_name)
+                    success_acc = (success_acc and False)
+                    continue
+                success, result = tag_point.insert_register(register)
+                if success:
+                    success_acc = (success and True)
+                    insertions += 1
+                else:
+                    success_acc = (success and True)
+                    err += result
+
+            cntr.close()
+            return dict(success=success_acc, result=insertions, error=err)
+        except Exception as e:
+            log(str(e))
+            cntr.close()
+            return dict(success=False, result=None, error=str(e))
