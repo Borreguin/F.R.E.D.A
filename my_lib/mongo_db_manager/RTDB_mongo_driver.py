@@ -366,11 +366,10 @@ class TagPoint(RTDATagPoint):
             self.log.error(tb + "\n" + str(e))
             return False, str(e)
 
-
     def sampled_series(self, time_range, span, how="average"):
         pass
 
-    def insert_register(self, register: dict, update_last=True, mongo_client: pm.MongoClient=None):
+    def insert_register(self, register: dict, update_last=True, mongo_client: pm.MongoClient=None, reg_sys=False):
         """
         Insert a new register in the RTDB. Note: update a register must not be done with this function.
         Function "insert_register" inserts a register without checking the timestamp value (for fast writing).
@@ -386,6 +385,7 @@ class TagPoint(RTDATagPoint):
         :param mongo_client: if is needed (useful for parallel insertion)
         :param update_last: By default must be True, it update the last value inserted in the data base
         :param register: dictionary with attributes for: (timestamp is UNIX UTC value)
+        :param reg_sys: saves number of insertions
         Ex. register = dict(value=1234.567, timestamp=1552852232.053721)
 
         Note: The internal value of "tag_name" is only for human reference checking, to query correctly
@@ -430,6 +430,7 @@ class TagPoint(RTDATagPoint):
                 # In a batch mode is not necessary to save each register
                 # update and number of insertions are done at the end of the operation
                 self.update_last_register(register)
+            if reg_sys:
                 sys_h.register_insertions(1)
 
             msg = "[{0}] One register was successfully inserted ".format(self.tag_name)
@@ -503,7 +504,7 @@ class TagPoint(RTDATagPoint):
         last_register = sub_list[0]
         insertions = 0
         for register in sub_list:
-            success, msg = tag_point.insert_register(register, update_last=False, mongo_client=mongo_client)
+            success, msg = tag_point.insert_register(register, update_last=False, reg_sys=False, mongo_client=mongo_client)
             if register["timestamp"] > last_register["timestamp"]:
                 last_register = register
             if success:
@@ -541,7 +542,7 @@ class TagPoint(RTDATagPoint):
         """ if number of register is lesser than 2 times number of workers """
         max_workers = 5
         if len(register_list) <= max_workers * 2:
-            insertions= self.insert_register_as_batch(self.container.settings, tag_name=self.tag_name, sub_list=register_list)
+            insertions = self.insert_register_as_batch(self.container.settings, tag_name=self.tag_name, sub_list=register_list)
             sys_h.register_insertions(insertions)
             self.log.info("Insertions: " + str(insertions))
             return True, insertions

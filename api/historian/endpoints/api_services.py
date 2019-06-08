@@ -31,6 +31,7 @@ log = init.LogDefaultConfig("web_service.log").logger
 # from api.historian.parsers import test_arguments
 from api.historian import parsers as arg_from
 from api.historian import serializers as ser_from
+from my_lib.mongo_db_manager import RTDB_system as sys_h
 
 ns = api.namespace('hist', description='Historian operations for saving time series data')
 
@@ -331,7 +332,7 @@ class RegistersForTags(Resource):
                     err += "[{0}] does not exist. ".format(tag_name)
                     success_acc = (success_acc and False)
                     continue
-                success, result = tag_point.insert_register(register)
+                success, result = tag_point.insert_register(register, update_last=True, reg_sys=False)
                 if success:
                     success_acc = (success and True)
                     insertions += 1
@@ -339,6 +340,7 @@ class RegistersForTags(Resource):
                     success_acc = (success and True)
                     err += result
 
+            sys_h.register_insertions(insertions)
             cntr.close()
             return dict(success=success_acc, result=insertions, error=err)
         except Exception as e:
