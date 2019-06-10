@@ -87,11 +87,11 @@ class RTDAcquisitionSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def snapshot_of_tag_list(self, tag_list, time):
+    def current_value_of_tag_list(self, tag_list, format_time):
         """
         Gets the data values of a list of tags in a given time
         :param tag_list:
-        :param time:
+        :param format_time:
         :return: DataFrame that contains the values of each tag in columns
         and the timestamp as index
         """

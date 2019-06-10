@@ -25,6 +25,7 @@ import datetime as dt
 import json
 log = init.LogDefaultConfig().logger
 
+
 def time_range_validation_w_format_time(start_time, end_time, format_time=None):
     """
     Validation of start_time, end_time or arg_from request.data as json value
@@ -81,6 +82,18 @@ def get_time_range(start_time, end_time, span: str=None):
     return True, d_range
 
 
+def validate_method(method: str=None):
+    valid_methods = list(interpolated_method["Method"])
+    methods = list()
+    for m in valid_methods:
+        methods += m.split(",")
+    methods = [m.strip().lower() for m in methods]
+    if method.lower() in methods:
+        return True, method.lower()
+    else:
+        return False, None
+
+
 freq_options = pd.DataFrame(columns=["Alias", "Description"],
                             data=[
     ["B", "business day frequency"],
@@ -109,3 +122,19 @@ freq_options = pd.DataFrame(columns=["Alias", "Description"],
     ["U, us", "microseconds"],
     ["N", "nanoseconds"]
 ])
+
+interpolated_method = pd.DataFrame(columns=["Method", "Description"],
+                                   data=[
+    ["linear", "Ignore the index and treat the values as equally spaced. This is the only method supported on MultiIndexes"],
+    ["time", "Works on daily and higher resolution data to interpolate given length of interval."],
+    ["index, values", "use the actual numerical values of the index."],
+    ["pad", "Fill in NaNs using existing values."],
+    ["nearest, zero, slinear, quadratic, cubic, spline, barycentric, polynomial",
+     "Passed to scipy.interpolate.interp1d. Both 'polynomial' and 'spline' require that you also specify an order (int), " +
+     "e.g. df.interpolate(method='polynomial', order=4). These use the numerical values of the index."],
+    ["krogh, piecewise_polynomial, spline, pchip, akima", "Wrappers around the SciPy interpolation methods of similar names. " +
+                                                          "See Notes: Added support for the 'akima' method. " +
+                                                          "Added interpolate method 'from_derivatives' which replaces " +
+                                                          "'piecewise_polynomial' in SciPy 0.18; backwards-compatible with SciPy < 0.18"],
+    ["from_derivatives", "Refers to scipy.interpolate.BPoly.from_derivatives which replaces 'piecewise_polynomial' interpolation method in scipy 0.18."]]
+    )
