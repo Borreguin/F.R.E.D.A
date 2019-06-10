@@ -62,8 +62,58 @@ class RTContainer(RTDAcquisitionSource):
     def interpolated_of_tag_list(self, tag_list, time_range, span, numeric=False):
         pass
 
-    def snapshot_of_tag_list(self, tag_list, time):
-        pass
+    def current_value_of_tag_list(self, tag_list: list, format_time):
+        if len(tag_list) == 0:
+            return False, "tag_list is empty"
+
+        if format_time is None:
+            fmt = init.DEFAULT_DATE_FORMAT
+
+        id_dict, tag_dict, found, not_found = self.get_dicts_for_tag_list(tag_list)
+        if len(found) == 0:
+            return False, "{0} any of the tag_name exists in the Historian".format(tag_list)
+        if len(not_found) > 0:
+            self.log.warning("{0} do not exist in the Historian".format(not_found))
+
+        try:
+            db = self.container[DBTimeSeries]
+            # Get tag_id for the tag_list
+            last_values_collection = db[CollectionLastValues]
+            filter_dict = {"tag_id": {"$in": list(id_dict.keys())}}
+            registers = list(last_values_collection.find(filter_dict))
+
+            r = dict()
+            found = list()
+            for reg in registers:
+                value = reg["series"]
+                if format_time != "epoch":
+                    value["timestamp"] = h.to_datetime(value["timestamp"])
+                    value["timestamp"] = value["timestamp"].strftime(format_time)
+                r[reg["tag_name"]] = value
+                found.append(reg["tag_name"])
+
+            result = dict(result=r, found=found, not_found=list(set(tag_list) - set(found)))
+            return True, result
+
+        except Exception as e:
+            tb = traceback.format_exc()
+            self.log.error(str(e) + str(tb))
+            return False, str(e)
+
+    def get_dicts_for_tag_list(self, tag_list):
+        tag_registers = [self.find_tag_point_by_name(tag) for tag in tag_list]
+        id_dict = dict()
+        tag_dict = dict()
+        not_found = list()
+        found = list()
+        for register, tag in zip(tag_registers, tag_list):
+            if register[0]:
+                id_dict[register[1]["tag_id"]] = tag
+                tag_dict[tag] = register[1]["tag_id"]
+                found.append(tag)
+            else:
+                not_found.append(tag)
+        return id_dict, tag_dict, found, not_found
 
     def find_tag_point_by_name(self, TagName: str):
         TagName = TagName.upper().strip()
@@ -104,14 +154,16 @@ class RTContainer(RTDAcquisitionSource):
             return False, "[{0}] already exists in the historian. Use other new_tag_name"\
                 .format(new_tag_name)
 
+        to_update = [CollectionTagList, CollectionLastValues]
         if success_old and not success_new:
             try:
                 filter_dict = dict(tag_id=result_old["tag_id"])
                 db = self.container[DBTimeSeries]
-                collection = db[CollectionTagList]
-                collection.update_one(filter_dict,
-                                               {"$set": {"tag_name": new_tag_name}
-                })
+                for collection in to_update:
+                    collection = db[collection]
+                    collection.update(filter_dict,
+                                                   {"$set": {"tag_name": new_tag_name}
+                    })
                 return True, "[{0}] changed to [{1}]".format(tag_name, new_tag_name)
             except Exception as e:
                 return False, str(e)
@@ -261,6 +313,8 @@ class TagPoint(RTDATagPoint):
 
     def interpolated(self, time_range, numeric=True, **kwargs):
         df_series = self.recorded_values(time_range, border_type="Inclusive", numeric=numeric)
+        if df_series.empty:
+            return df_series
         if numeric:
             df_series = df_series[["value"]].astype(float)
 
@@ -268,7 +322,7 @@ class TagPoint(RTDATagPoint):
         df_result = pd.concat([df_result, df_series], axis=1)
         df_result["value"].interpolate(inplace=True, **kwargs)
         df_result = df_result.loc[time_range]
-        return df_result
+        return df_result.loc[time_range]
 
     def n_values(self, time_range, n_samples, as_df=True, numeric=True):
         new_time_range = pd.date_range(time_range[0], time_range[-1], periods=n_samples)

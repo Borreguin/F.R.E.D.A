@@ -42,7 +42,17 @@ range_time_with_span = range_time.copy()
 range_time_with_span.add_argument("span", type=str, help="./help/span",
                                   required=False, default="15 min")
 
+""" arguments for interpolated values with method """
+range_time_with_span_and_method = range_time_with_span.copy()
+range_time_with_span_and_method.add_argument("method", type=str, help="./help/interpolated/method",
+                                             required=False, default="time")
+
 """ arguments for registers service """
 tag_list = reqparse.RequestParser()
-tag_list.add_argument("tag_names", type=list, help="List of tag_names",
+tag_list.add_argument("tag_list", type=list, help="List of tag_names",
                       required=True, default=["dev1.tag1", "dev2.tag2", "dev3.tag3"])
+
+"""arguments for tag_list with time format"""
+tag_list_w_time_format = tag_list.copy()
+tag_list_w_time_format.add_argument("format_time", type=str, required=False, default="%Y-%m-%d %H:%M:%S",
+                        help="Format: " + str(fmt_time_list))

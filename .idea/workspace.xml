@@ -2,10 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d40eb3fe-dd41-48f9-876c-922d6f99e172" name="Default Changelist" comment="Local Changes">
+      <change afterPath="$PROJECT_DIR$/api/historian/endpoints/api_admin_services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/historian/endpoints/api_list_services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/historian/endpoints/api_single_services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/historian/endpoints/api_testing_services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/historian/endpoints/api_services.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/historian/endpoints/api_services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/historian/endpoints/api_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/historian/endpoints/api_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/historian/endpoints/api_services.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/historian/parsers.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/historian/parsers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/my_lib/RTDB/RTDA_BaseClass.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_lib/RTDB/RTDA_BaseClass.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/my_lib/mongo_db_manager/RTDB_mongo_driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_lib/mongo_db_manager/RTDB_mongo_driver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings/initial_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings/initial_settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,7 +31,7 @@
     <SUITE FILE_PATH="coverage/F_R_E_D_A$pytest_in_logger_manager_py.coverage" NAME="pytest in logger_manager.py Coverage Results" MODIFIED="1553875282968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/my_lib/logger" />
     <SUITE FILE_PATH="coverage/HIST_API$app.coverage" NAME="app Coverage Results" MODIFIED="1557430473884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/F_R_E_D_A$mongo_handler.coverage" NAME="mongo_handler Coverage Results" MODIFIED="1555543168717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/my_lib/mongo_db_manager" />
-    <SUITE FILE_PATH="coverage/F_R_E_D_A$app.coverage" NAME="app Coverage Results" MODIFIED="1559409275379" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/F_R_E_D_A$app.coverage" NAME="app Coverage Results" MODIFIED="1560146693786" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/F_R_E_D_A$pytest_in_test_api_example_py.coverage" NAME="pytest in api_example.py Coverage Results" MODIFIED="1557033811644" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resources" />
     <SUITE FILE_PATH="coverage/F_R_E_D_A$RTDB_system.coverage" NAME="RTDB_system Coverage Results" MODIFIED="1558456568675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/my_lib/mongo_db_manager" />
     <SUITE FILE_PATH="coverage/F_R_E_D_A$pytest_in_restful_class_py.coverage" NAME="pytest in restful_class.py Coverage Results" MODIFIED="1555395793253" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/rest_classes" />
@@ -38,13 +46,14 @@
     <session id="-3249497">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="41" />
+          <entry key="project.closed" value="44" />
           <entry key="project.open.time.0" value="7" />
           <entry key="project.open.time.1" value="3" />
           <entry key="project.open.time.10" value="2" />
           <entry key="project.open.time.12" value="1" />
-          <entry key="project.open.time.13" value="1" />
+          <entry key="project.open.time.13" value="2" />
           <entry key="project.open.time.14" value="2" />
+          <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.18" value="2" />
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.2" value="3" />
@@ -58,24 +67,26 @@
           <entry key="project.open.time.33" value="1" />
           <entry key="project.open.time.35" value="1" />
           <entry key="project.open.time.36" value="1" />
+          <entry key="project.open.time.37" value="1" />
           <entry key="project.open.time.41" value="1" />
           <entry key="project.open.time.42" value="1" />
           <entry key="project.open.time.5" value="3" />
           <entry key="project.open.time.53" value="1" />
           <entry key="project.open.time.58" value="1" />
           <entry key="project.open.time.6" value="6" />
+          <entry key="project.open.time.68" value="1" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.opened" value="50" />
+          <entry key="project.opened" value="54" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="8" />
-          <entry key="dummy" value="135" />
+          <entry key="dummy" value="160" />
           <entry key="json" value="637" />
           <entry key="logger_manager" value="28" />
           <entry key="md" value="169" />
-          <entry key="py" value="36300" />
+          <entry key="py" value="39500" />
           <entry key="txt" value="138" />
         </counts>
       </usages-collector>
@@ -83,21 +94,21 @@
         <counts>
           <entry key="JSON" value="637" />
           <entry key="Markdown" value="169" />
-          <entry key="PLAIN_TEXT" value="273" />
-          <entry key="Python" value="36336" />
+          <entry key="PLAIN_TEXT" value="298" />
+          <entry key="Python" value="39536" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="bat" value="1" />
           <entry key="gitignore" value="1" />
-          <entry key="json" value="17" />
+          <entry key="json" value="18" />
           <entry key="lastfailed" value="1" />
           <entry key="log" value="4" />
           <entry key="md" value="4" />
           <entry key="nodeids" value="2" />
           <entry key="out" value="1" />
-          <entry key="py" value="281" />
+          <entry key="py" value="298" />
           <entry key="run_trainning" value="1" />
           <entry key="stepwise" value="2" />
           <entry key="txt" value="4" />
@@ -105,29 +116,125 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JSON" value="17" />
+          <entry key="JSON" value="18" />
           <entry key="Log" value="1" />
           <entry key="Markdown" value="4" />
           <entry key="PLAIN_TEXT" value="16" />
-          <entry key="Python" value="281" />
+          <entry key="Python" value="298" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
         <counts>
-          <entry key="git.branch.create.new" value="1" />
+          <entry key="git.branch.create.new" value="2" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="23" selection-start-line="23" selection-end-line="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_admin_services.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="340">
+              <caret line="20" column="25" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_single_services.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+              <folding>
+                <element signature="e#873#889#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/frame.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="7611" selection-start-line="7611" selection-end-line="7611" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_list_services.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="100">
+              <caret line="34" column="54" selection-start-line="34" selection-start-column="54" selection-end-line="34" selection-end-column="54" />
+              <folding>
+                <element signature="e#873#889#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/my_lib/mongo_db_manager/RTDB_mongo_driver.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="32" column="41" lean-forward="true" selection-start-line="32" selection-start-column="41" selection-end-line="32" selection-end-column="41" />
+            <state relative-caret-position="291">
+              <caret line="322" selection-start-line="322" selection-end-line="322" />
               <folding>
-                <element signature="e#42#56#0" expanded="true" />
+                <marker date="1560146487892" expanded="true" signature="2627:3622" ph="..." />
+                <marker date="1560146487892" expanded="true" signature="3665:4186" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/my_lib/RTDB/RTDA_BaseClass.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="94" column="74" lean-forward="true" selection-start-line="94" selection-start-column="74" selection-end-line="94" selection-end-column="74" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/historian/parsers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="235">
+              <caret line="46" column="97" lean-forward="true" selection-start-line="46" selection-start-column="71" selection-end-line="46" selection-end-column="97" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_help.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="19" selection-start-line="19" selection-end-line="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_functions.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="316">
+              <caret line="91" selection-start-line="91" selection-end-line="91" />
+              <folding>
+                <element signature="e#872#888#0" expanded="true" />
+                <marker date="1560146691374" expanded="true" signature="2903:2908" ph="..." />
+                <marker date="1560146691374" expanded="true" signature="3099:3397" ph="..." />
               </folding>
             </state>
           </provider>
@@ -145,14 +252,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>blog_post</find>
-      <find>expect</find>
-      <find>pagination_arguments</find>
-      <find>find_tag_point_by_name</find>
-      <find>_id</find>
-      <find>find</find>
-      <find>tag_name</find>
-      <find>request</find>
       <find>exc</find>
       <find />
       <find>interpo</find>
@@ -175,6 +274,14 @@
       <find>insert_register_as_batch</find>
       <find>Starting arg_from</find>
       <find>arg_from</find>
+      <find>MONGO_LOG_LEVEL</find>
+      <find>curren</find>
+      <find>update</find>
+      <find>format_time</find>
+      <find>epoch</find>
+      <find>:</find>
+      <find>range_time_with_span</find>
+      <find>&quot;epoch&quot;</find>
     </findStrings>
     <replaceStrings>
       <replace>\\</replace>
@@ -185,6 +292,7 @@
       <replace>test_arg</replace>
       <replace>&quot;, &quot;</replace>
       <replace>a</replace>
+      <replace>, &quot;</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -197,7 +305,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="mongoHandler" />
       </map>
     </option>
   </component>
@@ -231,20 +339,27 @@
         <option value="$PROJECT_DIR$/api/blog/endpoints/posts.py" />
         <option value="$PROJECT_DIR$/api/blog/endpoints/categories.py" />
         <option value="$PROJECT_DIR$/api/blog/parsers.py" />
-        <option value="$PROJECT_DIR$/my_lib/RTDB/RTDA_BaseClass.py" />
         <option value="$PROJECT_DIR$/my_lib/mongo_db_manager/RTDBClasses.py" />
         <option value="$PROJECT_DIR$/api/historian/endpoints/api_help.py" />
         <option value="$PROJECT_DIR$/api/restplus.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/settings/config.json" />
-        <option value="$PROJECT_DIR$/app.py" />
-        <option value="$PROJECT_DIR$/api/historian/parsers.py" />
-        <option value="$PROJECT_DIR$/api/historian/endpoints/api_functions.py" />
         <option value="$PROJECT_DIR$/api/historian/serializers.py" />
         <option value="$PROJECT_DIR$/my_lib/mongo_db_manager/RTDB_system.py" />
-        <option value="$PROJECT_DIR$/api/historian/endpoints/api_services.py" />
-        <option value="$PROJECT_DIR$/my_lib/mongo_db_manager/RTDB_mongo_driver.py" />
         <option value="$PROJECT_DIR$/settings/initial_settings.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_services.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_testing_services.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_goper_services.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_soper_services.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_admin_services.py" />
+        <option value="$PROJECT_DIR$/my_lib/RTDB/RTDA_BaseClass.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_group_services.py" />
+        <option value="$PROJECT_DIR$/app.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_list_services.py" />
+        <option value="$PROJECT_DIR$/api/historian/parsers.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_single_services.py" />
+        <option value="$PROJECT_DIR$/my_lib/mongo_db_manager/RTDB_mongo_driver.py" />
+        <option value="$PROJECT_DIR$/api/historian/endpoints/api_functions.py" />
       </list>
     </option>
   </component>
@@ -265,7 +380,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -282,12 +396,6 @@
               <item name="F.R.E.D.A" type="b2602c69:ProjectViewProjectNode" />
               <item name="F.R.E.D.A" type="462c0819:PsiDirectoryNode" />
               <item name="my_lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="F.R.E.D.A" type="b2602c69:ProjectViewProjectNode" />
-              <item name="F.R.E.D.A" type="462c0819:PsiDirectoryNode" />
-              <item name="my_lib" type="462c0819:PsiDirectoryNode" />
-              <item name="logger" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="F.R.E.D.A" type="b2602c69:ProjectViewProjectNode" />
@@ -310,9 +418,11 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="MONGO_LOG_LEVEL&#9;null&#9;null" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/app.py" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -321,16 +431,17 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Proyectos\F.R.E.D.A\api\historian\endpoints" />
+      <recent name="D:\Proyectos\F.R.E.D.A\api\historian" />
+      <recent name="D:\Proyectos\F.R.E.D.A" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Proyectos\F.R.E.D.A\api\historian\endpoints" />
       <recent name="D:\Proyectos\F.R.E.D.A\api\blog" />
       <recent name="D:\Proyectos\F.R.E.D.A\api\historian" />
       <recent name="D:\Proyectos\F.R.E.D.A\api" />
       <recent name="D:\Proyectos\F.R.E.D.A\rest_classes" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Proyectos\F.R.E.D.A\api\historian" />
-      <recent name="D:\Proyectos\F.R.E.D.A" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -571,7 +682,14 @@
       <option name="project" value="LOCAL" />
       <updated>1558505296726</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Local Changes">
+      <created>1559954079090</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1559954079090</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -617,28 +735,27 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13326226" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18070363" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49733475" weight="0.32936078" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4989339" weight="0.58938247" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49520257" visible="true" weight="0.35969663" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49307036" visible="true" weight="0.35861322" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32936078" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49840087" weight="0.32936078" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50479746" side_tool="true" visible="true" weight="0.35969663" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50692964" side_tool="true" visible="true" weight="0.35861322" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32936078" />
-      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.4989339" weight="0.48970747" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.4968017" weight="0.48862407" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="202" y="576" width="1574" height="591" id="SciView" order="3" show_stripe_button="false" sideWeight="0.7800338" type="FLOATING" weight="0.8390192" />
+      <window_info anchor="right" x="105" y="195" width="1574" height="591" id="SciView" order="3" show_stripe_button="false" sideWeight="0.7800338" type="FLOATING" weight="0.8390192" />
       <window_info anchor="right" id="Database" order="4" />
       <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="5" sideWeight="0.21996616" side_tool="true" weight="0.8390192" />
     </layout>
@@ -702,29 +819,12 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Starting all" />
     <MESSAGE value="Adding mongo handler" />
-    <MESSAGE value="Local Changes" />
     <MESSAGE value="WGCI working version IIS 7.5" />
-    <option name="LAST_COMMIT_MESSAGE" value="WGCI working version IIS 7.5" />
+    <MESSAGE value="Local Changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Local Changes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/api/historian/endpoints/api_functions.py</url>
-          <line>51</line>
-          <option name="timeStamp" value="360" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/api/historian/endpoints/api_functions.py</url>
-          <line>52</line>
-          <option name="timeStamp" value="361" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/api/historian/endpoints/api_functions.py</url>
-          <line>50</line>
-          <option name="timeStamp" value="363" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -735,41 +835,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/requests/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13345">
-          <caret line="809" selection-start-line="809" selection-end-line="809" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/requests/structures.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="43" selection-start-line="43" selection-end-line="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/_collections_abc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14246">
-          <caret line="839" selection-start-line="839" selection-end-line="839" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/abc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3128">
-          <caret line="184" selection-start-line="184" selection-end-line="184" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/simplejson/scanner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="71">
-          <caret line="78" selection-start-line="78" selection-end-line="78" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/simplejson/encoder.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -877,13 +942,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_help.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/my_lib/hmm/hmm_util.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-884" />
@@ -925,20 +983,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/settings/config.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-289">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/flask_restplus/api.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4063">
@@ -960,20 +1004,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/my_lib/mongo_db_manager/RTDBClasses.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-374">
-          <caret line="36" column="4" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/my_lib/RTDB/RTDA_BaseClass.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="126" column="42" selection-start-line="126" selection-start-column="42" selection-end-line="126" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/api/historian/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="506">
@@ -985,9 +1015,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-140">
           <caret line="36" column="27" selection-start-line="36" selection-start-column="27" selection-end-line="36" selection-end-column="27" />
-          <folding>
-            <element signature="e#852#868#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1005,10 +1032,90 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/settings/config.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="256">
+          <caret line="25" column="37" lean-forward="true" selection-start-line="25" selection-start-column="37" selection-end-line="25" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/werkzeug/_reloader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/settings/initial_settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="138" column="35" selection-start-line="138" selection-start-column="35" selection-end-line="138" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_testing_services.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1037">
+          <caret line="70" lean-forward="true" selection-start-line="70" selection-end-line="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/my_lib/RTDB/RTDA_BaseClass.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="94" column="74" lean-forward="true" selection-start-line="94" selection-start-column="74" selection-end-line="94" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/my_lib/mongo_db_manager/RTDBClasses.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="867">
+          <caret line="53" column="75" lean-forward="true" selection-start-line="53" selection-start-column="75" selection-end-line="53" selection-end-column="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_list_services.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="34" column="54" selection-start-line="34" selection-start-column="54" selection-end-line="34" selection-end-column="54" />
+          <folding>
+            <element signature="e#873#889#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_help.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/frame.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="7611" selection-start-line="7611" selection-end-line="7611" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_admin_services.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="25" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/api/historian/parsers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="47" column="84" selection-start-line="47" selection-start-column="84" selection-end-line="47" selection-end-column="84" />
+        <state relative-caret-position="235">
+          <caret line="46" column="97" lean-forward="true" selection-start-line="46" selection-start-column="71" selection-end-line="46" selection-end-column="97" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
           </folding>
@@ -1017,35 +1124,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="47" column="51" selection-start-line="47" selection-start-column="51" selection-end-line="47" selection-end-column="51" />
+        <state relative-caret-position="316">
+          <caret line="91" selection-start-line="91" selection-end-line="91" />
           <folding>
             <element signature="e#872#888#0" expanded="true" />
-            <marker date="1558553379939" expanded="true" signature="2902:2907" ph="..." />
+            <marker date="1560146691374" expanded="true" signature="2903:2908" ph="..." />
+            <marker date="1560146691374" expanded="true" signature="3099:3397" ph="..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_services.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="334" column="54" selection-start-line="334" selection-start-column="54" selection-end-line="334" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/settings/initial_settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2618">
-          <caret line="154" column="78" selection-start-line="154" selection-start-column="78" selection-end-line="154" selection-end-column="78" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/my_lib/mongo_db_manager/RTDB_mongo_driver.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="32" column="41" lean-forward="true" selection-start-line="32" selection-start-column="41" selection-end-line="32" selection-end-column="41" />
+        <state relative-caret-position="291">
+          <caret line="322" selection-start-line="322" selection-end-line="322" />
           <folding>
-            <element signature="e#42#56#0" expanded="true" />
+            <marker date="1560146487892" expanded="true" signature="2627:3622" ph="..." />
+            <marker date="1560146487892" expanded="true" signature="3665:4186" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/historian/endpoints/api_single_services.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+          <folding>
+            <element signature="e#873#889#0" expanded="true" />
           </folding>
         </state>
       </provider>
