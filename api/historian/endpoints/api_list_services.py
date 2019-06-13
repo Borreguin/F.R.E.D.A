@@ -50,7 +50,6 @@ class SnapShoot(Resource):
 
         # init container where time series are saved
         cntr = dr.RTContainer()
-        # define arg_from tag point (entity for time series)
         success, result = cntr.current_value_of_tag_list(tag_list, fmt)
         cntr.close()
         if success:
@@ -61,15 +60,17 @@ class SnapShoot(Resource):
             return dict(success=False, error=result)
 
 
-@ns.route('/recorded_values/<string:tag_list>')
+@ns.route('/recorded_values')
 class RecordedValues(Resource):
 
-    @api.expect(arg_from.range_time)
-    def get(self, tag_list):
+    @api.expect(arg_from.tag_list_time_range_w_time_format)
+    def get(self):
         """
-        Returns a list of registers between {start_time} and {end_time} for a specific {tag_list}
+        Returns the recorded values between {start_time} and {end_time} for each tag_name specified in {tag_list}
         """
-        args = arg_from.range_time.parse_args(request)
+        args = arg_from.tag_list_time_range_w_time_format.parse_args(request)
+        tag_list = args.get("tag_list", None)
+        tag_list = ''.join(tag_list).split(',')
         start_time = args.get("start_time", None)
         end_time = args.get("end_time", None)
         format_time = args.get("format_time", None)
@@ -81,30 +82,34 @@ class RecordedValues(Resource):
 
         cntr = dr.RTContainer()
         time_range = cntr.time_range(start_time, end_time)
-        tag_point = dr.TagPoint(cntr, tag_list)
-        # numeric=False implies data is obtained as it was saved in DB (without change)
-        # numeric=True force values to be numeric
-        result = tag_point.recorded_values(time_range, numeric=False)
-        cntr.close()
-        if len(result.index) > 0:
-            result["timestamp"] = [x.strftime(format_time) for x in result.index]
-        return dict(success=True, result=result.to_dict(orient='register'))
+        success, df = cntr.recorded_values_of_tag_list(tag_list, time_range, format_time)
 
-    @api.expect(ser_from.register_list)
-    def post(self, tag_name):
+        cntr.close()
+
+        return dict(success=success, result=df)
+
+    @api.expect(ser_from.register_for_tag_list)
+    def post(self):
         """
-        Inserts a list of new registers for a TagPoint {tag_name}
+        Inserts new registers for a {tag_list}
+
+        Post a list of register for each {tag_name} where {list} is the list of dictionaries: {tag_name, registers}
         """
         request_data = request.data
         try:
-            register_list = json.loads(request_data)["registers"]
+            _list = json.loads(request_data)["list"]
             cntr = dr.RTContainer()
-            tag_point = dr.TagPoint(cntr, tag_name)
-            success, result = tag_point.insert_many_registers(register_list)
+            for item in _list:
+                tag_point = dr.TagPoint(cntr, item["tag_name"])
+                if tag_point.tag_id is None:
+                    continue
+                registers = item["registers"]
+                success, result = tag_point.insert_many_registers(registers)
             cntr.close()
             return dict(success=success, result=result)
         except Exception as e:
-            log(str(e))
+            tb = traceback.format_exc()
+            log.error(str(e) + "\n" + str(tb))
             return dict(success=False, result="tag_name was not found or register is not correct")
 
 
@@ -201,6 +206,6 @@ class RegistersForTags(Resource):
             cntr.close()
             return dict(success=success_acc, result=insertions, error=err)
         except Exception as e:
-            log(str(e))
+            log.error(str(e))
             cntr.close()
             return dict(success=False, result=None, error=str(e))

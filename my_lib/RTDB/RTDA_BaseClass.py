@@ -92,7 +92,19 @@ class RTDAcquisitionSource(abc.ABC):
         Gets the data values of a list of tags in a given time
         :param tag_list:
         :param format_time:
-        :return: DataFrame that contains the values of each tag in columns
+        :return: Dictionary that contains the values of each tag in columns
+        and the timestamp as index
+        """
+        pass
+
+    @abc.abstractmethod
+    def recorded_values_of_tag_list(self, tag_list, time_range, format_time):
+        """
+        Gets the data values of a list of tags in a given time
+        :param time_range:
+        :param tag_list:
+        :param format_time:
+        :return: DataFrame that contains the recorded values of each tag in columns
         and the timestamp as index
         """
         pass
