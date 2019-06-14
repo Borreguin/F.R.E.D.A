@@ -99,6 +99,8 @@ class RecordedValues(Resource):
         try:
             _list = json.loads(request_data)["list"]
             cntr = dr.RTContainer()
+            success = False
+            result = None
             for item in _list:
                 tag_point = dr.TagPoint(cntr, item["tag_name"])
                 if tag_point.tag_id is None:
