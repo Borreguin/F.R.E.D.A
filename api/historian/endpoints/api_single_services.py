@@ -76,7 +76,8 @@ class SnapShoot(Resource):
             cntr.close()
             return dict(success=success, result=str(result))
         except Exception as e:
-            log.error(str(e))
+            tb = traceback.format_exc()
+            log.error(str(e) + "\n" + str(tb))
             return dict(success=False, error="tag_name was not found or register is not correct")
 
 
@@ -123,7 +124,8 @@ class RecordedValues(Resource):
             cntr.close()
             return dict(success=success, result=result)
         except Exception as e:
-            log(str(e))
+            tb = traceback.format_exc()
+            log.error(str(e) + "\n" + str(tb))
             return dict(success=False, result="tag_name was not found or register is not correct")
 
 

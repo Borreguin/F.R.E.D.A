@@ -15,17 +15,19 @@
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 """
-import traceback
-from my_lib.mongo_db_manager import RTDB_mongo_driver as drv
-from settings import initial_settings as init
-from datetime import datetime as dt
-from datetime import timezone as tz
 import os
-from settings.initial_settings import DB_MONGO_NAME as rtdb
+import traceback
+from datetime import datetime as dt
+import settings.initial_settings as init
+from my_lib.mongo_db_manager import RTDB_mongo_driver as drv
+from my_lib.mongo_db_manager import RTDBClasses as h
 
 COLLECTION_SYSTEM = "SYSTEM|ADMIN"
 INSERTION_TAG = "SYSTEM.NUM-INSERTIONS"
 SIZE_DISK_TAG = "SYSTEM.DISK_SIZE"
+DBTimeSeries = init.DB_MONGO_NAME
+CL_LAST_VALUE = init.CL_LAST_VALUES
+
 
 def register_insertions(number_insertions, recursive=0):
     cnt = drv.RTContainer()
@@ -34,16 +36,37 @@ def register_insertions(number_insertions, recursive=0):
     try:
         tag_point = drv.TagPoint(cnt, INSERTION_TAG)
         assert(tag_point.tag_type is not None)
-        timestamp = dt.now()
-        register = dict(timestamp=timestamp, value=number_insertions)
-        success, result = tag_point.insert_register(register, update_last=False)
+        timestamp = dt.now().replace(second=0, microsecond=0)
+        str_timestamp = timestamp.strftime(init.DEFAULT_DATE_FORMAT)
+        timestamp = h.to_epoch(timestamp)
+
+        db = cnt.container[DBTimeSeries]
+        value_collection = db[tag_point.tag_type]
+        last_value_collection = db[CL_LAST_VALUE]
+
+        """ Make sure that timestamp is in UNIX UTC format"""
+        date = h.to_date(timestamp)
+        filter_dict = dict(tag_id=tag_point.tag_id)
+        filter_dict["n_samples"] = {"$lt": h.n_samples_max}
+        filter_dict["date"] = date
+
+        value_collection.update_one(filter_dict,
+                                       {
+                                           "$inc": {"series." + str_timestamp: number_insertions,
+                                                    "n_samples": 1},
+                                           "$min": {"first": timestamp},
+                                           "$max": {"last": timestamp},
+                                           "$set": {"tag_name": tag_point.tag_name}
+                                           # note: tag_name is only for human reference checking
+                                           # to query correctly the tag_id should be used
+                                       }, upsert=True)
+
+        result = value_collection.find_one(filter_dict)
+        register = dict(timestamp=timestamp, value=result["series"][str_timestamp])
         tag_point.update_last_register(register)
         cnt.close()
-        if success:
-            return True, "[{0}] update".format(INSERTION_TAG)
-        else:
-            recursive += 1
-            register_insertions(number_insertions, recursive)
+        return True, "[{0}] update".format(INSERTION_TAG)
+
 
     except Exception as e:
         tb = traceback.format_exc()

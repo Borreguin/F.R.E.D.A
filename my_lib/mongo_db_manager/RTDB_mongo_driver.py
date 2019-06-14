@@ -67,7 +67,7 @@ class RTContainer(RTDAcquisitionSource):
             return False, "tag_list is empty"
 
         if format_time is None:
-            fmt = init.DEFAULT_DATE_FORMAT
+            format_time = init.DEFAULT_DATE_FORMAT
 
         id_dict, tag_dict, found, not_found = self.get_dicts_for_tag_list(tag_list)
         if len(found) == 0:
@@ -114,6 +114,33 @@ class RTContainer(RTDAcquisitionSource):
             else:
                 not_found.append(tag)
         return id_dict, tag_dict, found, not_found
+
+    def recorded_values_of_tag_list(self, tag_list, time_range, format_time):
+        if len(tag_list) == 0:
+            return False, "tag_list is empty"
+
+        if format_time is None:
+            format_time = init.DEFAULT_DATE_FORMAT
+
+        id_dict, tag_dict, found, not_found = self.get_dicts_for_tag_list(tag_list)
+        if len(found) == 0:
+            return False, "{0} any of the tag_name exists in the Historian".format(tag_list)
+        if len(not_found) > 0:
+            self.log.warning("{0} do not exist in the Historian".format(not_found))
+
+        result = dict(found=found, not_found=not_found, result=dict())
+        try:
+            point_list = [TagPoint(self, tag) for tag in found]
+            df = [pt.recorded_values(time_range, numeric=False) for pt in point_list]
+            for idx, tag in enumerate(found):
+                df[idx]["timestamp"] = [h.to_datetime(x).strftime(format_time) for x in df[idx].index]
+                result["result"][tag] = df[idx].to_dict(orient="register")
+            return True, result
+
+        except Exception as e:
+            tb = traceback.format_exc()
+            self.log.error(str(e) + str(tb))
+            return False, str(e)
 
     def find_tag_point_by_name(self, TagName: str):
         TagName = TagName.upper().strip()
@@ -330,61 +357,72 @@ class TagPoint(RTDATagPoint):
         return df
 
     def recorded_values(self, time_range, border_type="Inclusive", numeric=True):
-        db = self.container.container[DBTimeSeries]
-        collection = db[self.tag_type]
-        d_ini, d_end = h.to_date(time_range[0]), h.to_date(time_range[-1])
-        t_ini, t_fin = h.to_epoch(time_range[0]), h.to_epoch(time_range[-1])
+        try:
+            db = self.container.container[DBTimeSeries]
+            collection = db[self.tag_type]
+            d_ini, d_end = h.to_date(time_range[0]), h.to_date(time_range[-1])
+            t_ini, t_fin = h.to_epoch(time_range[0]), h.to_epoch(time_range[-1])
 
-        """
-            f1          l1  f2          l2
-            | *         |   |      *    |
-              t_ini               t_fin
-              t_ini < last
-              t_fin > first
-        """
-        filter_dict = {"tag_id": self.tag_id,
-                       "date": {
-                           "$gte": d_ini,
-                           "$lte": d_end
-                            },
-                       "first": {"$lte": t_fin},
-                       "last": {"$gte": t_ini}
-                       }
-        cursor = collection.find(filter_dict)
-        series = list()
-        for it in cursor:
-            series += list(it["series"])
+            """
+                f1          l1  f2          l2
+                | *         |   |      *    |
+                  t_ini               t_fin
+                  t_ini < last
+                  t_fin > first
+            """
+            filter_dict = {"tag_id": self.tag_id,
+                           "date": {
+                               "$gte": d_ini,
+                               "$lte": d_end
+                                },
+                           "first": {"$lte": t_fin},
+                           "last": {"$gte": t_ini}
+                           }
+            cursor = collection.find(filter_dict)
+            series = list()
+            for it in cursor:
+                if isinstance(it["series"], list):
+                    series += list(it["series"])
+                if isinstance(it["series"], dict):
+                    for k in it["series"].keys():
+                        series.append(dict(timestamp=h.to_epoch(k), value=it["series"][k]))
 
-        if len(series) == 0:
+            if len(series) == 0:
+                return pd.DataFrame()
+
+            df_series = pd.DataFrame(series)
+            df_series.set_index(["timestamp"], inplace=True)
+            df_series.index = pd.to_datetime(df_series.index, unit='s', utc=True)
+            df_series.sort_index(inplace=True)
+            df_series = df_series.loc[~df_series.index.duplicated(keep='first')]
+            # inclusive:
+            mask = None
+            if border_type == "Inclusive":
+                """ Necessary to add microseconds to include Pandas uses nanoseconds but python datetime not."""
+                mask = (df_series.index >= h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1)) & \
+                       (df_series.index <= (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
+
+            if border_type == "Exclusive":
+                mask = (df_series.index > (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
+                       (df_series.index < (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
+
+            if border_type == "Right":
+                mask = (df_series.index > (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
+                       (df_series.index <= (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
+
+            if border_type == "Left":
+                mask = (df_series.index >= (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
+                       (df_series.index < (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
+
+            if mask is not None:
+                df_series = df_series[mask]
+            return df_series
+
+        except Exception as e:
+            tb = traceback.format_exc()
+            self.log.error(str(e) + "\n" + str(tb))
             return pd.DataFrame()
 
-        df_series = pd.DataFrame(series)
-        df_series.set_index(["timestamp"], inplace=True)
-        df_series.index = pd.to_datetime(df_series.index, unit='s', utc=True)
-        df_series.sort_index(inplace=True)
-        df_series = df_series.loc[~df_series.index.duplicated(keep='first')]
-        # inclusive:
-        mask = None
-        if border_type == "Inclusive":
-            """ Necessary to add microseconds to include Pandas uses nanoseconds but python datetime not."""
-            mask = (df_series.index >= h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1)) & \
-                   (df_series.index <= (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
-
-        if border_type == "Exclusive":
-            mask = (df_series.index > (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
-                   (df_series.index < (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
-
-        if border_type == "Right":
-            mask = (df_series.index > (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
-                   (df_series.index <= (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
-
-        if border_type == "Left":
-            mask = (df_series.index >= (h.to_datetime(time_range[0]) - dt.timedelta(milliseconds=1))) & \
-                   (df_series.index < (h.to_datetime(time_range[-1] + dt.timedelta(milliseconds=1))))
-
-        if mask is not None:
-            df_series = df_series[mask]
-        return df_series
 
     def summaries(self, time_range, span, summary_type_list, calculation_type, timestamp_calculation):
         pass
@@ -598,7 +636,7 @@ class TagPoint(RTDATagPoint):
         if len(register_list) <= max_workers * 2:
             insertions = self.insert_register_as_batch(self.container.settings, tag_name=self.tag_name, sub_list=register_list)
             sys_h.register_insertions(insertions)
-            self.log.info("Insertions: " + str(insertions))
+            self.log.info(self.tag_name + ": Insertions: " + str(insertions))
             return True, insertions
 
         """ Split register_list in max_workers (to_run) to run in parallel fashion"""

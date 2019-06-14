@@ -72,3 +72,15 @@ tag_name_list = api.model("List of tag_names",{
     "tag_names": fields.List(fields.String, description="Tagnames", action='append',
                              required=True, default=["dev1.tag1", "dev2.tag2", "dev3.tag3"])}
 )
+
+""" Single list of records for a TagPoint"""
+single_record_list = api.model("List of records for a TagPoint", {
+    "tag_name": fields.String(description="Tag_name for the TagPoint", required=True, default="tag_name_1"),
+    "registers": fields.List(fields.Nested(register))
+})
+
+
+""" serializer for recorded values """
+register_for_tag_list = api.model("List of records for each TagPoint", {
+                                  "list": fields.List(fields.Nested(single_record_list))
+})
