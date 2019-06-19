@@ -75,7 +75,7 @@ class RTDAcquisitionSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def interpolated_of_tag_list(self, tag_list, time_range, span, numeric=False):
+    def interpolated_of_tag_list(self, tag_list, time_range):
         """
         Return a DataFrame that contains the values of each tag in column
         and the timestamp as index

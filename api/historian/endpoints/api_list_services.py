@@ -85,7 +85,6 @@ class RecordedValues(Resource):
         success, df = cntr.recorded_values_of_tag_list(tag_list, time_range, format_time)
 
         cntr.close()
-
         return dict(success=success, result=df)
 
     @api.expect(ser_from.register_for_tag_list)
@@ -115,31 +114,44 @@ class RecordedValues(Resource):
             return dict(success=False, result="tag_name was not found or register is not correct")
 
 
-@ns.route('/interpolated_values/<string:tag_list>')
+@ns.route('/interpolated_values')
 class InterpolatedValues(Resource):
 
-    @api.expect(arg_from.range_time_with_span)
-    def get(self, tag_list):
+    @api.expect(arg_from.tag_list_time_range_span_w_time_format)
+    def get(self):
         """ Returns a interpolated time series for {tag_list} from {start_time} to {end_time} in {span} intervals"""
-        args = arg_from.range_time_with_span.parse_args(request)
+        args = arg_from.tag_list_time_range_span_w_time_format.parse_args(request)
+        tag_list = args.get("tag_list", None)
+        tag_list = ''.join(tag_list).split(',')
         start_time = args.get("start_time", None)
         end_time = args.get("end_time", None)
+        span = args.get("span", None)
+        method = args.get("method", None)
         format_time = args.get("format_time", None)
-        span = args.get("span", "15 min")
         start_time, end_time, format_time = apf.time_range_validation_w_format_time(start_time, end_time, format_time)
         if start_time is None and end_time is None:
             return dict(success=False, result="Unable to recognize {start_time}, {end_time}")
 
+        valid, v_method = apf.validate_method(method)
+        if not valid:
+            return dict(success=False, result="[{0}] is not a valid method."
+                                              " Review ./help/interpolated/method".format(method))
+
         try:
             cntr = dr.RTContainer()
             time_range = cntr.time_range(start_time,end_time, freq=span)
-            tag_point = dr.TagPoint(cntr, tag_list)
-            # numeric=False implies data is obtained as it was saved in DB (without change)
-            # numeric=True force values to be numeric
-            result = tag_point.interpolated(time_range)
-            result = result.where((notnull(result)), None)
-            result["timestamp"] = [x.strftime(format_time) for x in result.index]
-            result = result.to_dict(orient='register')
+            """ Getting the corresponding dataframes for variables that were found """
+            success, df_dict = cntr.interpolated_of_tag_list(tag_list, time_range, limit=1, limit_area="inside", method=method)
+            if not success:
+                return dict(success=success, result=dict(), error=df_dict)
+
+            """ Transforming a dict of dataframes in a dict of registers """
+            result = dict()
+            for k in df_dict.keys():
+                df_tmp = df_dict[k].where((notnull(df_dict[k])), None)
+                df_tmp["timestamp"] = [x.strftime(format_time) for x in df_tmp.index]
+                result[k] = df_tmp.to_dict(orient='register')
+
             cntr.close()
             return dict(success=True, result=result)
         except Exception as e:
@@ -150,10 +162,10 @@ class InterpolatedValues(Resource):
 
 @ns.route('/registers')
 class RegistersForTags(Resource):
-
+    """
     @api.expect(arg_from.tag_list)
     def get(self):
-        """ Returns the last registers values for a {list of tag_names} """
+        # Returns the last registers values for a {list of tag_names}
         args = arg_from.tag_list.parse_args()["tag_list"]
         tag_names = ''.join(args).split(',')
         if tag_names is None:
@@ -174,6 +186,7 @@ class RegistersForTags(Resource):
                 err += reg
         cntr.close()
         return dict(succes=success_acc, result=list_reg, error=err)
+    """
 
     @api.expect(ser_from.register_tag_name_list)
     def post(self):

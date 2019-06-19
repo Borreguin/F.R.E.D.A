@@ -59,8 +59,27 @@ class RTContainer(RTDAcquisitionSource):
     def span(delta_time):
         return pd.Timedelta(**delta_time)
 
-    def interpolated_of_tag_list(self, tag_list, time_range, span, numeric=False):
-        pass
+    def interpolated_of_tag_list(self, tag_list, time_range, numeric=False, **kwargs):
+        if len(tag_list) == 0:
+            return False, "tag_list is empty"
+
+        id_dict, tag_dict, found, not_found = self.get_dicts_for_tag_list(tag_list)
+        if len(found) == 0:
+            return False, "{0} none of the tag_names exists in the Historian".format(tag_list)
+        if len(not_found) > 0:
+            self.log.warning("{0} do not exist in the Historian".format(not_found))
+        try:
+            tag_points = [TagPoint(self, tag_name) for tag_name in found]
+            df_lst = [point.interpolated(time_range, numeric=numeric, **kwargs) for point in tag_points]
+            result = dict()
+            for tag, df in zip(found, df_lst):
+                result[tag] = df
+            return True, result
+
+        except Exception as e:
+            tb = traceback.format_exc()
+            self.log.error(str(e) + str(tb))
+            return False, str(e)
 
     def current_value_of_tag_list(self, tag_list: list, format_time):
         if len(tag_list) == 0:
@@ -71,7 +90,7 @@ class RTContainer(RTDAcquisitionSource):
 
         id_dict, tag_dict, found, not_found = self.get_dicts_for_tag_list(tag_list)
         if len(found) == 0:
-            return False, "{0} any of the tag_name exists in the Historian".format(tag_list)
+            return False, "{0} do not exist in the Historian".format(tag_list)
         if len(not_found) > 0:
             self.log.warning("{0} do not exist in the Historian".format(not_found))
 
@@ -101,6 +120,12 @@ class RTContainer(RTDAcquisitionSource):
             return False, str(e)
 
     def get_dicts_for_tag_list(self, tag_list):
+        """
+        Returns dictionaries id_dict: tag_id->tag_name, tag_dict: tag_name->tag_id
+        Returns list of: found (tag_names that were found), not_found (not founded tags)
+        :param tag_list:
+        :return: id_dict, tag_dict, found, not_found
+        """
         tag_registers = [self.find_tag_point_by_name(tag) for tag in tag_list]
         id_dict = dict()
         tag_dict = dict()
@@ -340,8 +365,8 @@ class TagPoint(RTDATagPoint):
 
     def interpolated(self, time_range, numeric=True, **kwargs):
         df_series = self.recorded_values(time_range, border_type="Inclusive", numeric=numeric)
-        if df_series.empty:
-            return df_series
+        # if df_series.empty:
+        #    return df_series
         if numeric:
             df_series = df_series[["value"]].astype(float)
 
@@ -388,7 +413,7 @@ class TagPoint(RTDATagPoint):
                         series.append(dict(timestamp=h.to_epoch(k), value=it["series"][k]))
 
             if len(series) == 0:
-                return pd.DataFrame()
+                return pd.DataFrame(columns=["value"], index=time_range)
 
             df_series = pd.DataFrame(series)
             df_series.set_index(["timestamp"], inplace=True)

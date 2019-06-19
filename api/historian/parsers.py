@@ -57,11 +57,25 @@ tag_list_w_time_format = tag_list.copy()
 tag_list_w_time_format.add_argument("format_time", type=str, required=False, default="%Y-%m-%d %H:%M:%S",
                         help="Format: " + str(fmt_time_list))
 
-""" arguments for tag_list, time_range and time_format """
-tag_list_time_range_w_time_format = tag_list_w_time_format.copy()
-tag_list_time_range_w_time_format.add_argument("start_time", type=str, required=False,
+""" arguments for tag_list, time_range  """
+tag_list_time_range = tag_list.copy()
+tag_list_time_range.add_argument("start_time", type=str, required=True,
                         default=start_time.strftime(fmt_time_default),
                         help="Supported formats: " + str(fmt_time_list))
-tag_list_time_range_w_time_format.add_argument("end_time", type=str, required=False,
+tag_list_time_range.add_argument("end_time", type=str, required=True,
                         default=end_time.strftime(fmt_time_default),
                         help="Supported formats: " + str(fmt_time_list))
+
+""" arguments for tag_list, time_range and time_format """
+tag_list_time_range_w_time_format = tag_list_time_range.copy()
+tag_list_time_range_w_time_format.add_argument("format_time", type=str, required=False, default="%Y-%m-%d %H:%M:%S",
+                        help="Format: " + str(fmt_time_list))
+
+""" tag_list_time_range_span_and_time_format """
+tag_list_time_range_span_w_time_format = tag_list_time_range.copy()
+tag_list_time_range_span_w_time_format.add_argument("span", type=str, help="./help/span",
+                                  required=False, default="15 min")
+tag_list_time_range_span_w_time_format.add_argument("method", type=str, help="./help/interpolated/method",
+                                             required=False, default="time")
+tag_list_time_range_span_w_time_format.add_argument("format_time", type=str, required=False, default="%Y-%m-%d %H:%M:%S",
+                        help="Format: " + str(fmt_time_list))
